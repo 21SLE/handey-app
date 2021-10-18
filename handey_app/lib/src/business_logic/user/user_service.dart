@@ -13,6 +13,11 @@ class UserService {
       await _httpClient.postRequest('/register', userModel.toJson());
 
     print(data);
+    // if (response.statusCode == 200) {
+    //   print(reponse.body);
+    // } else {
+    //   print('A network error occurred');
+    // }
     return data;
   }
 
@@ -25,7 +30,7 @@ class UserService {
 
   Future<UserModel> getUserInfo(int userId) async {
     Map<String, dynamic> data =
-    await _httpClient.getRequest('user/$userId/info', tokenYn: true);
+    await _httpClient.getRequest('/user/$userId/info', tokenYn: true);
 
     if (data != null) {
       return UserModel.fromJson(data);
@@ -34,7 +39,10 @@ class UserService {
     }
   }
 
-  // Future<bool> checkEmailIfDuplicated(String email) async {
-  //
-  // }
+  Future<bool> checkEmailDuplication(String email) async {
+    print('user service checkEmailDuplication');
+    bool data = await _httpClient.getBoolRequest('/register/duplication?email=$email');
+    print(data);
+    return data;
+  }
 }

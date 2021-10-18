@@ -15,7 +15,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<bool> signIn({@required String email, @required String password}) async {
     Map<String, dynamic> data = await _userService.signIn(email, password);
-    if(data != null) {
+    if(data != null && data['succeed']) {
       HttpClient httpClient = HttpClient();
       httpClient.accessToken = data['accessToken'];
       user.userId = data['userId'];
@@ -27,6 +27,12 @@ class UserProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> checkEmailDuplication(String email) async {
+    print('user provider checkEmailDuplication');
+    return await _userService.checkEmailDuplication(email);
+  }
+
 
   Future<UserModel> getUserInfo(int userId) async {
     return await _userService.getUserInfo(userId);
