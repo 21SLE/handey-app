@@ -1,3 +1,2 @@
-# handey_app
-
+# handey-app
 Handey mobile application
