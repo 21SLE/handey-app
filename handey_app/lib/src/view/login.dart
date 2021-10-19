@@ -213,10 +213,10 @@ class _LoginState extends State<Login> {
   }
 
   onTapSignUpButton(context) async {
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) => SignUp()));
-    // Navigator.push(context,
+    // Navigator.pushReplacement(context,
     //     MaterialPageRoute(builder: (BuildContext context) => SignUp()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context) => SignUp()));
   }
 
   bool areEmailAndPwNotEmpty() {
