@@ -9,8 +9,12 @@ class UserProvider extends ChangeNotifier {
   UserModel user = UserModel();
   UserService _userService = UserService();
 
-  Future<Map<String, dynamic>> signUp(UserModel userModel) async {
-    return await _userService.signUp(userModel);
+  Future<bool> signUp(UserModel userModel) async {
+    Map<String, dynamic> data =  await _userService.signUp(userModel);
+    if(data != null && data['succeed'])
+      return true;
+    else
+      return false;
   }
 
   Future<bool> signIn({@required String email, @required String password}) async {
