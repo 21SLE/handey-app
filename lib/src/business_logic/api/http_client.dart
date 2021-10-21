@@ -6,7 +6,7 @@ class HttpClient {
   // final String baseUrl = 'http://10.0.2.2:8000';
   // final String baseUrl = 'http://192.168.61.1:8000';
   // final String baseUrl = 'http://localhost:8000';
-  final String baseUrl = 'http://b479-1-235-76-56.ngrok.io';
+  final String baseUrl = 'http://6030-1-235-76-56.ngrok.io';
 
   String accessToken = '';
 
@@ -52,21 +52,76 @@ class HttpClient {
     return jsonDecode(response.body);
   }
 
-  Future<bool> getBoolRequest(String url,
-      {bool tokenYn: false}) async {
+  Future<Map<String, dynamic>> putRequest(
+      String url, Map<String, dynamic> body, {bool tokenYn: false}) async {
     http.Response response;
+    var headers;
     if (tokenYn) {
-      var headers = {'ACCESS_TOKEN': accessToken};
-      response = await http.get(Uri.parse(baseUrl + url), headers: headers);
-
+      headers = {'Content-Type': 'application/json', 'ACCESS_TOKEN': accessToken};
     } else {
-      response = await http.get(Uri.parse(baseUrl + url));
-
+      headers = {'Content-Type': 'application/json'};
     }
+    response = await http.put(Uri.parse(baseUrl + url),
+        body: jsonEncode(body), headers: headers);
+    print('url : ${baseUrl + url}');
+    print('statusCode : ${response.statusCode}');
+    print('response body : ${response.body}');
+    return jsonDecode(response.body);
+  }
+
+  Future<Map<String, dynamic>> deleteRequest(
+      String url, {bool tokenYn: false}) async {
+    http.Response response;
+    var headers;
+    if (tokenYn) {
+      headers = {'Content-Type': 'application/json', 'ACCESS_TOKEN': accessToken};
+    } else {
+      headers = {'Content-Type': 'application/json'};
+    }
+    response = await http.delete(Uri.parse(baseUrl + url), headers: headers);
+
     print('url : ${baseUrl + url}');
     print('statusCode : ${response.statusCode}');
     print('response body : ${response.body}');
 
     return jsonDecode(response.body);
   }
+
+  Future<Map<String, dynamic>> patchRequest(
+      String url, Map<String, dynamic> body,
+      {bool tokenYn: false}) async {
+    http.Response response;
+    var headers;
+    if (tokenYn) {
+      headers = {'Content-Type': 'application/json', 'ACCESS_TOKEN': accessToken};
+    } else {
+      headers = {'Content-Type': 'application/json'};
+    }
+    response = await http.patch(Uri.parse(baseUrl + url),
+        body: jsonEncode(body), headers: headers);
+
+    print('url : ${baseUrl + url}');
+    print('statusCode : ${response.statusCode}');
+    print('response body : ${response.body}');
+
+    return jsonDecode(response.body);
+  }
+
+  // Future<bool> getBoolRequest(String url,
+  //     {bool tokenYn: false}) async {
+  //   http.Response response;
+  //   if (tokenYn) {
+  //     var headers = {'ACCESS_TOKEN': accessToken};
+  //     response = await http.get(Uri.parse(baseUrl + url), headers: headers);
+  //
+  //   } else {
+  //     response = await http.get(Uri.parse(baseUrl + url));
+  //
+  //   }
+  //   print('url : ${baseUrl + url}');
+  //   print('statusCode : ${response.statusCode}');
+  //   print('response body : ${response.body}');
+  //
+  //   return jsonDecode(response.body);
+  // }
 }
