@@ -190,6 +190,7 @@ class _LoginState extends State<Login> {
       // bool emailChecked = true;
       if (emailChecked) {
         bool loginSucceeded = await userProvider.signIn(email: emailTEC.text, password: pwTEC.text);
+        userProvider.userNotifyListeners();
         if (loginSucceeded) {
           ///로그인 성공
           // Navigator.pushReplacement(context,

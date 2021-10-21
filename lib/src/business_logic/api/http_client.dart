@@ -29,9 +29,10 @@ class HttpClient {
     }
     print('url : ${baseUrl + url}');
     print('statusCode : ${response.statusCode}');
-    print('response body : ${response.body}');
+    print('response body : ${utf8.decode(response.bodyBytes)}');
 
-    return jsonDecode(response.body);
+    /// print(utf8.decode(response.bodyBytes));
+    return jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   Future<Map<String, dynamic>> postRequest(
@@ -88,8 +89,7 @@ class HttpClient {
   }
 
   Future<Map<String, dynamic>> patchRequest(
-      String url, Map<String, dynamic> body,
-      {bool tokenYn: false}) async {
+      String url, {bool tokenYn: false}) async {
     http.Response response;
     var headers;
     if (tokenYn) {
@@ -97,8 +97,7 @@ class HttpClient {
     } else {
       headers = {'Content-Type': 'application/json'};
     }
-    response = await http.patch(Uri.parse(baseUrl + url),
-        body: jsonEncode(body), headers: headers);
+    response = await http.patch(Uri.parse(baseUrl + url), headers: headers);
 
     print('url : ${baseUrl + url}');
     print('statusCode : ${response.statusCode}');
