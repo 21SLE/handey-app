@@ -4,7 +4,6 @@ import 'package:handey_app/src/business_logic/todo/todo_model.dart';
 import 'package:handey_app/src/business_logic/todo/todo_service.dart';
 
 class ToDoProvider extends ChangeNotifier {
-  ToDoBoxModel toDoBox = ToDoBoxModel();
   ToDoService _toDoService = ToDoService();
   List<ToDoBoxModel> toDoBoxList;
 

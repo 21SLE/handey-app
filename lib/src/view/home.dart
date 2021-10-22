@@ -141,20 +141,19 @@ class ToDoBoxListView extends StatelessWidget {
       itemCount: toDoBoxList.length,
       itemBuilder: (context, index) {
         return ToDoBoxTile(
-          toDoBox: toDoBoxList[index],
-          toDoElmList: toDoBoxList[index].toDoElmList
-        );
-      },
+            toDoBoxIndex: index,
+            toDoBox: toDoBoxList[index],
+            toDoElmList: toDoBoxList[index].toDoElmList);},
       separatorBuilder: (context, index) {
-        return Space(height: 8);
-      },
+        return Space(height: 8);},
     );
   }
 }
 
 class ToDoBoxTile extends StatefulWidget {
-  ToDoBoxTile({@required this.toDoBox, @required this.toDoElmList});
+  ToDoBoxTile({@required this.toDoBoxIndex, @required this.toDoBox, @required this.toDoElmList});
 
+  final int toDoBoxIndex;
   final ToDoBoxModel toDoBox;
   final List<ToDoElmModel> toDoElmList;
   @override
@@ -164,6 +163,7 @@ class ToDoBoxTile extends StatefulWidget {
 class _ToDoBoxTileState extends State<ToDoBoxTile> {
   ScreenSize size;
 
+  int toDoBoxIndex;
   ToDoBoxModel toDoBox;
   List<ToDoElmModel> toDoElmList;
 
@@ -176,6 +176,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   @override
   void initState() {
     super.initState();
+    toDoBoxIndex = widget.toDoBoxIndex;
     toDoBox = widget.toDoBox;
     toDoElmList = widget.toDoElmList;
     titleTEC = TextEditingController(text: toDoBox.title);
@@ -241,19 +242,23 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                 Container(
                   height: size.getSize(26.0),
                   width: size.getSize(200),
-                  child: TextFormField(
-                    controller: titleTEC,
-                    focusNode: titleFNode,
-                    textAlign: TextAlign.left,
-                    minLines: 1,
-                    style: rTxtStyle,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: underlineFocusedBorder(),
-                    ),
-                    onEditingComplete: () async {
-
+                  child: Focus(
+                    onFocusChange: (hasFocus) {
+                      if(!hasFocus) {
+                        provider.updateToDoBoxTitle(provider.toDoBoxList[toDoBoxIndex].id, titleTEC.text);
+                      }
                     },
+                    child: TextFormField(
+                      controller: titleTEC,
+                      focusNode: titleFNode,
+                      textAlign: TextAlign.left,
+                      minLines: 1,
+                      style: rTxtStyle,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: underlineFocusedBorder(),
+                      ),
+                    ),
                   ),
                 )
               ]
@@ -282,15 +287,22 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                   Container(
                     height: size.getSize(26.0),
                     width: size.getSize(200),
-                    child: TextFormField(
-                      controller: toDoElmTEC[index],
-                      focusNode: todoElmFNode[index],
-                      textAlign: TextAlign.left,
-                      minLines: 1,
-                      style: rTxtStyle,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: underlineFocusedBorder(),
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        if(!hasFocus) {
+                          provider.updateToDoElmContent(e.id, toDoElmTEC[index].text);
+                        }
+                      },
+                      child: TextFormField(
+                        controller: toDoElmTEC[index],
+                        focusNode: todoElmFNode[index],
+                        textAlign: TextAlign.left,
+                        minLines: 1,
+                        style: rTxtStyle,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: underlineFocusedBorder(),
+                        ),
                       ),
                     ),
                   )
