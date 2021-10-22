@@ -70,12 +70,44 @@ class ToDoService {
   /// todobox 삭제
   Future<bool> deleteTodoBox(int userId, int toDoBoxId) async {
     Map<String, dynamic> data =
-        await _httpClient.patchRequest('/user/$userId/toDoBox/$toDoBoxId', tokenYn: true);
+        await _httpClient.deleteRequest('/user/$userId/toDoBox/$toDoBoxId', tokenYn: true);
 
     // 요청 성공여부 return
     return data['success'];
   }
 
+  /// todoelm 객체 생성
+  Future<int> createToDoElmObj(int toDoBoxId) async {
+    Map<String, dynamic> data =
+    await _httpClient.postRequest('/user/toDoBox/$toDoBoxId', {},tokenYn: true);
+
+    //toDoElmId return
+    if(data['success']){
+      return data['data'];
+    } else {
+      return null;
+    }
+  }
+
+  /// todoelm 내용 수정
+  Future<bool> updateToDoElmContent(int toDoElmId, String content) async {
+    Map<String, dynamic> data =
+    await _httpClient.putRequest('/user/toDoElm/$toDoElmId', {'content': content}, tokenYn: true);
+
+    // 요청 성공여부 return
+    return data['success'];
+  }
+
+  /// todoelm 삭제
+  Future<bool> deleteTodoElm(int toDoElmId) async {
+    Map<String, dynamic> data =
+      await _httpClient.deleteRequest('/user/toDoElm/$toDoElmId', tokenYn: true);
+
+    // 요청 성공여부 return
+    return data['success'];
+  }
+
+  /// todoelm complete 여부 수정
   Future<bool> updateToDoElmCompleted(int toDoElmId) async {
     Map<String, dynamic> data =
     await _httpClient.patchRequest('/user/toDoElm/$toDoElmId', tokenYn: true);
@@ -87,4 +119,6 @@ class ToDoService {
       return null;
     }
   }
+
+
 }

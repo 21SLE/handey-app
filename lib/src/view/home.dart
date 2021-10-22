@@ -230,28 +230,35 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoBoxTitleInput() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
-        Space(width: 12),
-        Container(
-          height: size.getSize(26.0),
-          width: size.getSize(200),
-          child: TextFormField(
-            controller: titleTEC,
-            focusNode: titleFNode,
-            textAlign: TextAlign.left,
-            minLines: 1,
-            style: rTxtStyle,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: underlineFocusedBorder(),
-            ),
-          ),
-        )
-      ]
+    return Consumer<ToDoProvider>(
+        builder: (context, provider, child) {
+          return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+                Space(width: 12),
+                Container(
+                  height: size.getSize(26.0),
+                  width: size.getSize(200),
+                  child: TextFormField(
+                    controller: titleTEC,
+                    focusNode: titleFNode,
+                    textAlign: TextAlign.left,
+                    minLines: 1,
+                    style: rTxtStyle,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: underlineFocusedBorder(),
+                    ),
+                    onEditingComplete: () async {
+
+                    },
+                  ),
+                )
+              ]
+          );
+        }
     );
   }
 
