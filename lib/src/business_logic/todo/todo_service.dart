@@ -8,7 +8,7 @@ class ToDoService {
   /// 회원별 todobox list 불러오기
   Future<List<ToDoBoxModel>> getToDoBoxList(int userId) async {
     Map<String, dynamic> data = await _httpClient.getRequest('/user/$userId/toDoBoxList', tokenYn: true);
-    print(data);
+
     if (data['success']) {
       List<dynamic> toDoBoxListData = data['data'];
       List<ToDoBoxModel> toDoBoxList = toDoBoxListData.map((e) => ToDoBoxModel.fromJson(e)).toList();

@@ -15,10 +15,11 @@ class ToDoProvider extends ChangeNotifier {
   }
 
   /// todobox 객체 생성
-  Future<int> createToDoBoxObj(int userId) async {
-    int toDoBoxId = await _toDoService.createToDoBoxObj(userId);
-
-    return toDoBoxId;
+  void createToDoBoxObj(int userId) {
+    ToDoBoxModel toDoBox = new ToDoBoxModel();
+    toDoBoxList.add(toDoBox);
+    _toDoService.createToDoBoxObj(userId);
+    notifyListeners();
   }
 
   /// todobox title 수정
@@ -40,9 +41,13 @@ class ToDoProvider extends ChangeNotifier {
   }
 
   /// todobox 삭제
-  Future<bool> deleteTodoBox(int userId, int toDoBoxId) async {
-    // todobox 고정 상태 return
-    return await _toDoService.deleteTodoBox(userId, toDoBoxId);
+  void deleteTodoBox(int userId, int toDoBoxId, ToDoBoxModel toDoBox) async {
+    // toDoBoxList.removeAt(toDoBoxIndex);
+
+    // toDoBoxList.removeWhere((toDoBox) => toDoBox.id == toDoBoxId);
+    _toDoService.deleteTodoBox(userId, toDoBoxId);
+    // getToDoBoxList(userId);
+    notifyListeners();
   }
 
   /// todoelm 객체 생성
