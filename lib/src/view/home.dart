@@ -265,7 +265,10 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                 children: [
                   GestureDetector(
                       onTap: () async {
-
+                        provider.updateToDoElmCompleted(e.id);
+                        setState(() {
+                          e.completed = !e.completed;
+                        });
                       },
                       child: ToDoCheckBtn(value: e.completed)),
                   Space(width: 10),

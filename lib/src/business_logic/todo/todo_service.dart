@@ -75,4 +75,16 @@ class ToDoService {
     // 요청 성공여부 return
     return data['success'];
   }
+
+  Future<bool> updateToDoElmCompleted(int toDoElmId) async {
+    Map<String, dynamic> data =
+    await _httpClient.patchRequest('/user/toDoElm/$toDoElmId', tokenYn: true);
+
+    // todobox 타이틀 유무 상태 return
+    if(data['success']){
+      return data['data'];
+    } else {
+      return null;
+    }
+  }
 }

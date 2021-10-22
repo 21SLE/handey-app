@@ -13,4 +13,9 @@ class ToDoProvider extends ChangeNotifier {
 
     return toDoBoxList;
   }
+
+  Future<bool> updateToDoElmCompleted(int toDoElmId) async {
+    bool data = await _toDoService.updateToDoElmCompleted(toDoElmId);
+    return data;
+  }
 }
