@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/api/http_client.dart';
 import 'package:handey_app/src/business_logic/user/user_model.dart';
 
@@ -18,22 +15,30 @@ class UserService {
     // } else {
     //   print('A network error occurred');
     // }
-    return data;
+    if(data['success']){
+      return data['data'];
+    } else {
+      return null;
+    }
   }
 
   /// 로그인
   Future<Map<String, dynamic>> signIn(String email, String password) async {
     Map<String, dynamic> data = await _httpClient
         .postRequest('/login', {'email': email, 'password': password});
-    return data;
+    if(data['success']){
+      return data['data'];
+    } else {
+      return null;
+    }
   }
 
   Future<UserModel> getUserInfo(int userId) async {
     Map<String, dynamic> data =
     await _httpClient.getRequest('/user/$userId/info', tokenYn: true);
 
-    if (data != null) {
-      return UserModel.fromJson(data);
+    if (data != null && data['success']) {
+      return UserModel.fromJson(data['data']);
     } else {
       return null;
     }
@@ -41,8 +46,12 @@ class UserService {
 
   Future<bool> checkEmailDuplication(String email) async {
     print('user service checkEmailDuplication');
-    bool data = await _httpClient.getBoolRequest('/register/duplication?email=$email');
+    Map<String, dynamic> data = await _httpClient.getRequest('/register/duplication?email=$email');
     print(data);
-    return data;
+    if(data['success']){
+      return data['data'];
+    } else {
+      return null;
+    }
   }
 }

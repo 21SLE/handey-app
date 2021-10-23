@@ -22,9 +22,10 @@ class UserProvider extends ChangeNotifier {
     if(data != null && data['succeed']) {
       HttpClient httpClient = HttpClient();
       httpClient.accessToken = data['accessToken'];
-      user.userId = data['userId'];
-      user.email = email;
-      user = await getUserInfo(user.userId);
+      this.user = await getUserInfo(data['userId']);
+      this.user.userId = data['userId'];
+      this.user.email = email;
+      print(this.user);
       return true;
     }
     else {
@@ -40,5 +41,9 @@ class UserProvider extends ChangeNotifier {
 
   Future<UserModel> getUserInfo(int userId) async {
     return await _userService.getUserInfo(userId);
+  }
+
+  void userNotifyListeners() {
+    notifyListeners();
   }
 }
