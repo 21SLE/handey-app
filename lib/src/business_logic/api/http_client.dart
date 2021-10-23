@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 
 class HttpClient {
   static final HttpClient _instance = HttpClient._internal();
-  // final String baseUrl = 'http://10.0.2.2:8000';
+  final String baseUrl = 'http://10.0.2.2:8080';
   // final String baseUrl = 'http://192.168.61.1:8000';
   // final String baseUrl = 'http://localhost:8000';
-  final String baseUrl = 'http://91ed-1-235-76-56.ngrok.io';
+  // final String baseUrl = 'http://91ed-1-235-76-56.ngrok.io';
 
   String accessToken = '';
 
