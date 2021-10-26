@@ -2,6 +2,44 @@
 import 'package:handey_app/src/business_logic/api/http_client.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
 
+HttpClient _httpClient = HttpClient();
+
+/// 회원별 todobox list 불러오기
+Future<List<ToDoBoxModel>> getToDoBoxList(int userId) async {
+  Map<String, dynamic> data = await _httpClient.getRequest('/user/$userId/toDoBoxList', tokenYn: true);
+
+  if (data['success']) {
+    List<dynamic> toDoBoxListData = data['data'];
+    List<ToDoBoxModel> toDoBoxList = toDoBoxListData.map((e) => ToDoBoxModel.fromJson(e)).toList();
+
+    return toDoBoxList;
+  } else {
+    return [];
+  }
+}
+
+/// todobox 객체 생성
+Future<int> createToDoBoxObj(int userId) async {
+  Map<String, dynamic> data =
+  await _httpClient.postRequest('/user/$userId/toDoBox', {},tokenYn: true);
+
+  //toDoBoxId return
+  if(data['success']){
+    return data['data'];
+  } else {
+    return null;
+  }
+}
+
+/// todobox 삭제
+Future<bool> deleteTodoBox(int userId, int toDoBoxId) async {
+  Map<String, dynamic> data =
+  await _httpClient.deleteRequest('/user/$userId/toDoBox/$toDoBoxId', tokenYn: true);
+
+  // 요청 성공여부 return
+  return data['success'];
+}
+
 class ToDoService {
   HttpClient _httpClient = HttpClient();
 

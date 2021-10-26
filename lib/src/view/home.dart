@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
 import 'package:handey_app/src/business_logic/todo/todo_provider.dart';
+import 'package:handey_app/src/business_logic/todo/todo_service.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
@@ -65,7 +66,6 @@ class WelcomeText extends StatelessWidget {
   }
 }
 
-
 class CalendarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -91,7 +91,14 @@ class CalendarWidget extends StatelessWidget {
   }
 }
 
-class ToDoBoxListSection extends StatelessWidget {
+class ToDoBoxListSection extends StatefulWidget {
+  @override
+  _ToDoBoxListSectionState createState() => _ToDoBoxListSectionState();
+}
+
+class _ToDoBoxListSectionState extends State<ToDoBoxListSection> {
+  List<ToDoBoxModel> toDoBoxList;
+
   @override
   Widget build(BuildContext context) {
     ScreenSize size = ScreenSize();
@@ -103,7 +110,7 @@ class ToDoBoxListSection extends StatelessWidget {
             handleException(context, snapshot.error);
           }
           if (snapshot.hasData) {
-            List<ToDoBoxModel> toDoBoxList = snapshot.data;
+            toDoBoxList = snapshot.data;
             if (toDoBoxList.length == 0) {
               return Container();
             } else {
@@ -115,10 +122,10 @@ class ToDoBoxListSection extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CreateToDoBoxBtn(),
+                        CreateToDoBoxBtn( notifyToDoBoxListSection: refresh),
                       ],
                     ),
-                    ToDoBoxListView(toDoBoxList: toDoBoxList),
+                    ToDoBoxListView(toDoBoxList: toDoBoxList, notifyToDoBoxListSection: refresh),
                     Space(height: size.getSize(20))
                   ],
                 ),
@@ -131,9 +138,24 @@ class ToDoBoxListSection extends StatelessWidget {
           }
         });
   }
+  refresh() {
+    setState(() {});
+  }
+
+  addToDoBox(int toDoBoxId) {
+    setState(() {
+      ToDoBoxModel toDoBox = new ToDoBoxModel();
+      toDoBox.id = toDoBoxId;
+      toDoBoxList.add(toDoBox);
+    });
+  }
 }
 
 class CreateToDoBoxBtn extends StatelessWidget {
+  CreateToDoBoxBtn({@required this.notifyToDoBoxListSection});
+
+  final Function() notifyToDoBoxListSection;
+
   @override
   Widget build(BuildContext context) {
     ScreenSize size = ScreenSize();
@@ -142,7 +164,8 @@ class CreateToDoBoxBtn extends StatelessWidget {
           return GestureDetector(
             onTap: () {
               toDoProvider.createToDoBoxObj(userProvider.user.userId);
-              Provider.of<ToDoProvider>(context, listen: false).getToDoBoxList(userProvider.user.userId);
+              Provider.of<ToDoProvider>(context, listen: true).getToDoBoxList(userProvider.user.userId);
+              // addToDoBox(toDoProvider.createToDoBoxObj(userProvider.user.userId));
             },
             child: Container(
               alignment: Alignment.center,
@@ -173,9 +196,10 @@ class CreateToDoBoxBtn extends StatelessWidget {
 }
 
 class ToDoBoxListView extends StatefulWidget {
-  ToDoBoxListView({@required this.toDoBoxList});
+  ToDoBoxListView({@required this.toDoBoxList, @required this.notifyToDoBoxListSection});
 
   final List<ToDoBoxModel> toDoBoxList;
+  final Function() notifyToDoBoxListSection;
 
   @override
   _ToDoBoxListViewState createState() => _ToDoBoxListViewState();
@@ -195,59 +219,45 @@ class _ToDoBoxListViewState extends State<ToDoBoxListView> {
   @override
   Widget build(BuildContext context) {
     size = ScreenSize();
-    return ListView.separated(
+    int userId = Provider.of<UserProvider>(context, listen: false).user.userId;
+    return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: EdgeInsets.only(top: size.getSize(0)),
       itemCount: toDoBoxList.length,
       itemBuilder: (context, index) {
-        return ToDoBoxTile(
-            toDoBoxIndex: index,
-            toDoBox: toDoBoxList[index],
-            toDoElmList: toDoBoxList[index].toDoElmList);},
-      separatorBuilder: (context, index) {
-        return Space(height: 8);},
+        final toDoBox = toDoBoxList[index];
+        return Dismissible(
+            key: Key(toDoBox.id.toString()),
+            child: ToDoBoxTile(toDoBoxIndex: index, toDoBox: toDoBox, toDoElmList: toDoBox.toDoElmList, notifyToDoBoxListSection: widget.notifyToDoBoxListSection),
+            onDismissed: (direction) {
+              // 해당 index의 item을 리스트에서 삭제
+              setState(() {
+                toDoBoxList.removeAt(index);
+                deleteTodoBox(userId, toDoBox.id);
+              });
+          },
+            );
+      }
     );
   }
 }
 
-
-// class ToDoBoxListView extends StatelessWidget {
-//   ToDoBoxListView({@required this.toDoBoxList});
-//
-//   final List<ToDoBoxModel> toDoBoxList;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     ScreenSize size = ScreenSize();
-//     return ListView.separated(
-//       physics: NeverScrollableScrollPhysics(),
-//       shrinkWrap: true,
-//       padding: EdgeInsets.only(top: size.getSize(0)),
-//       itemCount: toDoBoxList.length,
-//       itemBuilder: (context, index) {
-//         return ToDoBoxTile(
-//             toDoBoxIndex: index,
-//             toDoBox: toDoBoxList[index],
-//             toDoElmList: toDoBoxList[index].toDoElmList);},
-//       separatorBuilder: (context, index) {
-//         return Space(height: 8);},
-//     );
-//   }
-// }
-
 class ToDoBoxTile extends StatefulWidget {
-  ToDoBoxTile({@required this.toDoBoxIndex, @required this.toDoBox, @required this.toDoElmList});
+  ToDoBoxTile({@required this.toDoBoxIndex, @required this.toDoBox, @required this.toDoElmList, @required this.notifyToDoBoxListSection});
 
   final int toDoBoxIndex;
   final ToDoBoxModel toDoBox;
   final List<ToDoElmModel> toDoElmList;
+  final Function() notifyToDoBoxListSection;
   @override
   _ToDoBoxTileState createState() => _ToDoBoxTileState();
 }
 
 class _ToDoBoxTileState extends State<ToDoBoxTile> {
   ScreenSize size;
+  bool toDoBoxYn;
+
 
   int toDoBoxIndex;
   ToDoBoxModel toDoBox;
@@ -262,6 +272,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   @override
   void initState() {
     super.initState();
+    toDoBoxYn = true;
     toDoBoxIndex = widget.toDoBoxIndex;
     toDoBox = widget.toDoBox;
     toDoElmList = widget.toDoElmList;
@@ -288,10 +299,12 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   Widget build(BuildContext context) {
     size = ScreenSize();
 
-    return Container(
+    return toDoBoxYn
+    ? Container(
       width: size.getSize(350.0),
       // height: size.getSize(120.0),
       padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(0), size.getSize(12)),
+      margin: EdgeInsets.only(bottom: size.getSize(8)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(size.getSize(10)),
@@ -320,7 +333,8 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
               : Container()
         ],
       ),
-    );
+    )
+    : Container();
   }
 
   Widget toDoBoxTitleInput() {
@@ -385,8 +399,11 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                   // todo elm 편집 가능하게(줄마다 햄버거 아이콘, 삭제 아이콘 나오게)
                   break;
                 default: // 삭제
-                  toDoProvider.toDoBoxList.removeWhere((toDoBox) => toDoBox.id == toDoBoxId);
+                  // toDoProvider.toDoBoxList.removeWhere((toDoBox) => toDoBox.id == toDoBoxId);
                   toDoProvider.deleteTodoBox(userProvider.user.userId, toDoBoxId, toDoBox);
+                  // setState(() {toDoBoxYn = false;});
+                  widget.notifyToDoBoxListSection();
+                  print(Provider.of<ToDoProvider>(context, listen: false).getToDoBoxList(userProvider.user.userId));
                   break;
               }
             },

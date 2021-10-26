@@ -19,6 +19,7 @@ class ToDoProvider extends ChangeNotifier {
     ToDoBoxModel toDoBox = new ToDoBoxModel();
     toDoBoxList.add(toDoBox);
     _toDoService.createToDoBoxObj(userId);
+    getToDoBoxList(userId);
     notifyListeners();
   }
 
@@ -46,7 +47,7 @@ class ToDoProvider extends ChangeNotifier {
 
     // toDoBoxList.removeWhere((toDoBox) => toDoBox.id == toDoBoxId);
     _toDoService.deleteTodoBox(userId, toDoBoxId);
-    // getToDoBoxList(userId);
+    getToDoBoxList(userId);
     notifyListeners();
   }
 
