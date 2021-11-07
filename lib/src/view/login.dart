@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/home.dart';
+import 'package:handey_app/src/view/home_stf.dart';
 import 'package:handey_app/src/view/signup.dart';
 import 'package:handey_app/src/view/utils/border.dart';
 import 'package:handey_app/src/view/utils/popup_custom.dart';
@@ -195,8 +196,10 @@ class _LoginState extends State<Login> {
           ///로그인 성공
           // Navigator.pushReplacement(context,
           //     MaterialPageRoute(builder: (BuildContext context) => Home()));
+          // Navigator.push(context,
+          //     MaterialPageRoute(builder: (BuildContext context) => Home()));
           Navigator.push(context,
-              MaterialPageRoute(builder: (BuildContext context) => Home()));
+              MaterialPageRoute(builder: (BuildContext context) => HomeStateful()));
         } else {
           ///로그인 실패 : 비밀번호 불일치
           await showCustomPopUp(
