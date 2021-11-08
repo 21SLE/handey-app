@@ -10,6 +10,8 @@ import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 
 class HomeStateful extends StatelessWidget {
   @override
@@ -71,7 +73,8 @@ class CalendarWidget extends StatelessWidget {
     ScreenSize size = ScreenSize();
     return Container(
       width: size.getSize(340.0),
-      height: size.getSize(140.0),
+      height: size.getSize(180.0),
+      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(14), size.getSize(8), size.getSize(8)),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -85,7 +88,71 @@ class CalendarWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Text('Calendar', style: rTxtStyle),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  Container(
+                    // padding: EdgeInsets.only(top: size.getSize(10)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          DateTime.now().year.toString(),
+                          style: TextStyle(
+                              color: Color(0xFFFFE600),
+                              fontSize: size.getSize(34),
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Space(height: 10),
+                        Text(
+                          '        '+DateTime.now().month.toString(),
+                          style: TextStyle(
+                              color: Color(0xFF747474),
+                              fontSize: size.getSize(24),
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: size.getSize(3), bottom: size.getSize(5)),
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                )
+                ],
+              ),
+          ),
+          SizedBox(
+            width: size.getSize(220),
+            child: TableCalendar(
+              headerStyle: HeaderStyle(
+                headerMargin: EdgeInsets.all(0),
+                formatButtonVisible: false,
+                leftChevronIcon: Icon(Icons.arrow_left),
+                rightChevronIcon: Icon(Icons.arrow_right),
+                titleTextStyle: const TextStyle(fontSize: 17.0),
+              ),
+              headerVisible: false,
+              shouldFillViewport: true,
+              focusedDay: DateTime.now(),
+              firstDay: DateTime(1990),
+              lastDay: DateTime(2050),
+            ),
+          ),
+        ],
+      )
     );
   }
 }
