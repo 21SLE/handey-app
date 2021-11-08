@@ -350,7 +350,10 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
       //for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode.add(FocusNode());
     }
     editingYn = false;
-    fieldCount = toDoElmList.length;
+    if(toDoElmList != null && toDoElmList.length != 0)
+      fieldCount = toDoElmList.length;
+    else
+      fieldCount = 0;
   }
 
   @override
