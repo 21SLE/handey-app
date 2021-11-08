@@ -268,6 +268,8 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   //List<FocusNode> todoElmFNode = [];
 
   bool editingYn;
+  int fieldCount = 0;
+  int nextIndex = 0;
 
   @override
   void initState() {
@@ -282,6 +284,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
       //for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode.add(FocusNode());
     }
     editingYn = false;
+    fieldCount = toDoElmList.length;
   }
 
   @override
@@ -410,6 +413,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                     toDoElmList.add(newToDoElm);
 
                     toDoElmTEC.add(TextEditingController());
+                    fieldCount++;
                     //todoElmFNode.add(FocusNode());
                   });
                   break;
@@ -463,9 +467,17 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoElmInputSection(List<ToDoElmModel> toDoElmList) {
+    int i = 0;
     return Column(
         children: toDoElmList.map((e) {
           int index = toDoElmList.indexOf(e);
+          // if(toDoElmTEC.length < fieldCount) {
+          //   for(int i = toDoElmTEC.length; i < fieldCount; i++) {
+          //     toDoElmTEC.add(TextEditingController());
+          //   }
+          // }
+          int displayNumber = i + 1;
+          i++;
           return Row(
             children: [
               GestureDetector(
@@ -506,6 +518,12 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                       setState(() {
                         // await toDoElmTEC[index].dispose();
                         //todoElmFNode[index].dispose();
+
+                        // when removing a TextField, you must do two things:
+                        // 1. decrement the number of controllers you should have (fieldCount)
+                        // 2. actually remove this field's controller from the list of controllers
+                        fieldCount--;
+                        toDoElmTEC.removeAt(index);
                         toDoElmList.removeAt(index);
 
                       });
