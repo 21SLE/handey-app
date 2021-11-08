@@ -17,16 +17,24 @@ class HomeStateful extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController();
-
+    ScreenSize size = ScreenSize();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
         appBar: AppBar(
+          // leadingWidth: 0,
+          // leading: Container(),
+          // backgroundColor: Colors.white,
+          // title: Text('홍길동님 환영합니다.',
+          //     style: rTxtStyle.copyWith(fontSize: size.getSize(16))),
+          // actions: [
+          //   Icon(Icons.menu, size: size.getSize(20)),
+          //   Space(width: 11)
+          // ],
           toolbarHeight: 0.0,
           elevation: 0.0,
-          backgroundColor: Colors.white,
         ),
         body: Container(
             alignment: Alignment.center,
@@ -36,7 +44,6 @@ class HomeStateful extends StatelessWidget {
                 WelcomeText(),
                 Space(height: 12),
                 CalendarWidget(),
-                Space(height: 12),
                 Expanded(
                   child: SingleChildScrollView(
                       controller: scrollController,
@@ -88,6 +95,9 @@ class CalendarWidget extends StatelessWidget {
           ),
         ],
       ),
+      //   decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(size.getSize(10)),
+      //   ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -209,7 +219,8 @@ class _ToDoBoxListSectionState extends State<ToDoBoxListSection> {
             if (toDoBoxList.length == 0) {
               return Container();
             } else {
-              return Padding(
+              return Container(
+                margin: EdgeInsets.only(top: size.getSize(12)),
                 padding: EdgeInsets.only(left: size.getSize(20), right: size.getSize(20)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
