@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
-// import 'package:handey_app/src/business_logic/todo/todo_provider.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
@@ -479,38 +478,43 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
           int displayNumber = i + 1;
           i++;
           return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                  onTap: () async {
-                    _toDoService.updateToDoElmCompleted(e.id);
-                    setState(() {
-                      e.completed = !e.completed;
-                    });
-                  },
-                  child: ToDoCheckBtn(value: e.completed)),
-              Space(width: 10),
-              Container(
-                height: size.getSize(26.0),
-                width: size.getSize(200),
-                child: Focus(
-                  onFocusChange: (hasFocus) {
-                    if (!hasFocus) {
-                      toDoElmList[index].content = toDoElmTEC[index].text;
-                      _toDoService.updateToDoElmContent(e.id, toDoElmTEC[index].text);
-                    }
-                  },
-                  child: TextFormField(
-                    controller: toDoElmTEC[index],
-                    //focusNode: todoElmFNode[index],
-                    textAlign: TextAlign.left,
-                    minLines: 1,
-                    style: rTxtStyle,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: underlineFocusedBorder(),
+              Row(
+                children: [
+                  GestureDetector(
+                      onTap: () async {
+                        _toDoService.updateToDoElmCompleted(e.id);
+                        setState(() {
+                          e.completed = !e.completed;
+                        });
+                      },
+                      child: ToDoCheckBtn(value: e.completed)),
+                  Space(width: 10),
+                  Container(
+                    height: size.getSize(26.0),
+                    width: size.getSize(200),
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        if (!hasFocus) {
+                          toDoElmList[index].content = toDoElmTEC[index].text;
+                          _toDoService.updateToDoElmContent(e.id, toDoElmTEC[index].text);
+                        }
+                      },
+                      child: TextFormField(
+                        controller: toDoElmTEC[index],
+                        //focusNode: todoElmFNode[index],
+                        textAlign: TextAlign.left,
+                        minLines: 1,
+                        style: rTxtStyle,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: underlineFocusedBorder(),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
               editingYn
                   ? GestureDetector(
@@ -530,9 +534,12 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                       _toDoService.deleteTodoElm(e.id);
 
                     },
-                    child: Icon(
-                      Icons.delete,
-                      size: size.getSize(20)))
+                    child: Padding(
+                      padding: EdgeInsets.only(right: size.getSize(12)),
+                      child: Icon(
+                        Icons.delete,
+                        size: size.getSize(20)),
+                    ))
                   : Container()
             ],
           );
