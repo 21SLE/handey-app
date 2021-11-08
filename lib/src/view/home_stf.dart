@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
-import 'package:handey_app/src/business_logic/todo/todo_provider.dart';
+// import 'package:handey_app/src/business_logic/todo/todo_provider.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
@@ -265,7 +265,9 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   List<TextEditingController> toDoElmTEC = [];
 
   FocusNode titleFNode;
-  List<FocusNode> todoElmFNode = [];
+  //List<FocusNode> todoElmFNode = [];
+
+  bool editingYn;
 
   @override
   void initState() {
@@ -277,8 +279,9 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
     titleFNode = FocusNode();
     if(toDoElmList != null && toDoElmList.length != 0) {
       for (int i = 0; i < toDoElmList.length; i++) toDoElmTEC.add(TextEditingController(text: toDoElmList[i].content));
-      for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode.add(FocusNode());
+      //for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode.add(FocusNode());
     }
+    editingYn = false;
   }
 
   @override
@@ -287,14 +290,10 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
     titleFNode.dispose();
     if(toDoBox.toDoElmList != null && toDoBox.toDoElmList.length != 0) {
       for (int i = 0; i < toDoBox.toDoElmList.length; i++) toDoElmTEC[i].dispose();
-      for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode[i].dispose();
+      //for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode[i].dispose();
     }
     super.dispose();
   }
-  //
-  // _updateToDoBoxTitle(int toDoBoxId, String title) async {
-  //   bool result = await updateToDoBoxTitle(toDoBoxId, title);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +325,22 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               toDoBoxTitleInput(),
-              toDoBoxEditBtn(toDoBox),
+              editingYn
+              ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    editingYn = false;
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0, size.getSize(12), size.getSize(12), size.getSize(19.5)),
+                  child: Text(
+                    '완료',
+                    style: rTxtStyle.copyWith(fontSize: size.getSize(14), color: Colors.grey),
+                  ),
+                )
+              )
+              : toDoBoxEditBtn(toDoBox),
             ],
           ),
           toDoBox.toDoElmList != null && toDoBox.toDoElmList.length != 0
@@ -338,47 +352,43 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoBoxTitleInput() {
-    return Consumer<ToDoProvider>(
-        builder: (context, provider, child) {
-          return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
-                Space(width: 12),
-                Container(
-                  height: size.getSize(26.0),
-                  width: size.getSize(200),
-                  child: Focus(
-                    onFocusChange: (hasFocus) {
-                      if(!hasFocus) {
-                        // provider.updateToDoBoxTitle(provider.toDoBoxList[toDoBoxIndex].id, titleTEC.text);
-                        toDoBox.title = titleTEC.text;
-                        _toDoService.updateToDoBoxTitle(toDoBox.id, titleTEC.text);
-                      }
-                    },
-                    child: TextFormField(
-                      controller: titleTEC,
-                      focusNode: titleFNode,
-                      textAlign: TextAlign.left,
-                      minLines: 1,
-                      style: rTxtStyle,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: underlineFocusedBorder(),
-                      ),
-                    ),
-                  ),
-                )
-              ]
-          );
-        }
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+          Space(width: 12),
+          Container(
+            height: size.getSize(26.0),
+            width: size.getSize(200),
+            child: Focus(
+              onFocusChange: (hasFocus) {
+                if(!hasFocus) {
+                  // provider.updateToDoBoxTitle(provider.toDoBoxList[toDoBoxIndex].id, titleTEC.text);
+                  toDoBox.title = titleTEC.text;
+                  _toDoService.updateToDoBoxTitle(toDoBox.id, titleTEC.text);
+                }
+              },
+              child: TextFormField(
+                controller: titleTEC,
+                focusNode: titleFNode,
+                textAlign: TextAlign.left,
+                minLines: 1,
+                style: rTxtStyle,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: underlineFocusedBorder(),
+                ),
+              ),
+            ),
+          )
+        ]
     );
   }
 
   Widget toDoBoxEditBtn(ToDoBoxModel toDoBox) {
-    return Consumer2<ToDoProvider, UserProvider>(
-        builder: (context, toDoProvider, userProvider, child) {
+    return Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
           return PopupMenuButton(
             // 팝업메뉴버튼 참고 https://codesinsider.com/flutter-popup-menu-button/
             padding: EdgeInsets.fromLTRB(size.getSize(0), size.getSize(0), size.getSize(0), size.getSize(0)),
@@ -388,17 +398,32 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(size.getSize(10))),
             ),
-            onSelected: (value) {
-              int toDoBoxId = toDoProvider.toDoBoxList[toDoBoxIndex].id;
+            onSelected: (value) async {
+              int toDoBoxId = toDoBox.id;
               switch(value) {
                 case '추가':
-                  toDoProvider.createToDoElmObj(toDoBoxId);
+                  int newToDoBoxId = await _toDoService.createToDoElmObj(toDoBoxId);
+                  setState(() {
+                    ToDoElmModel newToDoElm = new ToDoElmModel();
+                    newToDoElm.id = newToDoBoxId;
+                    newToDoElm.completed = false;
+                    toDoElmList.add(newToDoElm);
+
+                    toDoElmTEC.add(TextEditingController());
+                    //todoElmFNode.add(FocusNode());
+                  });
                   break;
                 case '고정':
-                  toDoProvider.updateToDoBoxFixedYn(toDoBoxId);
+                  _toDoService.updateToDoBoxFixedYn(toDoBoxId);
+                  setState(() {
+                    toDoBox.fixed = !toDoBox.fixed;
+                  });
                   break;
                 default: // 편집
-                // todo elm 편집 가능하게(줄마다 햄버거 아이콘, 삭제 아이콘 나오게)
+                  // todo elm 편집 가능하게(줄마다 햄버거 아이콘, 삭제 아이콘 나오게)
+                  setState(() {
+                    editingYn = true;
+                  });
                   break;
               }
             },
@@ -438,48 +463,61 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoElmInputSection(List<ToDoElmModel> toDoElmList) {
-    return Consumer<ToDoProvider>(
-        builder: (context, provider, child) {
-          return Column(
-              children: toDoElmList.map((e) {
-                int index = toDoElmList.indexOf(e);
-                return Row(
-                  children: [
-                    GestureDetector(
-                        onTap: () async {
-                          provider.updateToDoElmCompleted(e.id);
-                          setState(() {
-                            e.completed = !e.completed;
-                          });
-                        },
-                        child: ToDoCheckBtn(value: e.completed)),
-                    Space(width: 10),
-                    Container(
-                      height: size.getSize(26.0),
-                      width: size.getSize(200),
-                      child: Focus(
-                        onFocusChange: (hasFocus) {
-                          if(!hasFocus) {
-                            provider.updateToDoElmContent(e.id, toDoElmTEC[index].text);
-                          }
-                        },
-                        child: TextFormField(
-                          controller: toDoElmTEC[index],
-                          focusNode: todoElmFNode[index],
-                          textAlign: TextAlign.left,
-                          minLines: 1,
-                          style: rTxtStyle,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: underlineFocusedBorder(),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              }).toList());
-        }
-    );
+    return Column(
+        children: toDoElmList.map((e) {
+          int index = toDoElmList.indexOf(e);
+          return Row(
+            children: [
+              GestureDetector(
+                  onTap: () async {
+                    _toDoService.updateToDoElmCompleted(e.id);
+                    setState(() {
+                      e.completed = !e.completed;
+                    });
+                  },
+                  child: ToDoCheckBtn(value: e.completed)),
+              Space(width: 10),
+              Container(
+                height: size.getSize(26.0),
+                width: size.getSize(200),
+                child: Focus(
+                  onFocusChange: (hasFocus) {
+                    if (!hasFocus) {
+                      toDoElmList[index].content = toDoElmTEC[index].text;
+                      _toDoService.updateToDoElmContent(e.id, toDoElmTEC[index].text);
+                    }
+                  },
+                  child: TextFormField(
+                    controller: toDoElmTEC[index],
+                    //focusNode: todoElmFNode[index],
+                    textAlign: TextAlign.left,
+                    minLines: 1,
+                    style: rTxtStyle,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: underlineFocusedBorder(),
+                    ),
+                  ),
+                ),
+              ),
+              editingYn
+                  ? GestureDetector(
+                    onTap: () async {
+                      setState(() {
+                        // await toDoElmTEC[index].dispose();
+                        //todoElmFNode[index].dispose();
+                        toDoElmList.removeAt(index);
+
+                      });
+                      _toDoService.deleteTodoElm(e.id);
+
+                    },
+                    child: Icon(
+                      Icons.delete,
+                      size: size.getSize(20)))
+                  : Container()
+            ],
+          );
+    }).toList());
   }
 }
