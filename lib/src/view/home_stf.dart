@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
+import 'package:handey_app/src/view/schedule_popup.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
@@ -120,7 +121,7 @@ class CalendarWidget extends StatelessWidget {
                         ),
                         Space(height: 10),
                         Text(
-                          '        '+DateTime.now().month.toString(),
+                          DateTime.now().month.toString(),
                           style: TextStyle(
                               color: Color(0xFF747474),
                               fontSize: size.getSize(24),
@@ -159,6 +160,10 @@ class CalendarWidget extends StatelessWidget {
               focusedDay: DateTime.now(),
               firstDay: DateTime(1990),
               lastDay: DateTime(2050),
+              onDaySelected: (selectedDay, focusedDay) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) => ScheduleHistoryScreenMaterialApp()));
+              },
             ),
           ),
         ],
