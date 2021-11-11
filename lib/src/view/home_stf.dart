@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
-import 'package:handey_app/src/business_logic/todo/todo_provider.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
+import 'package:handey_app/src/view/schedule_popup.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
@@ -11,21 +11,31 @@ import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 
 class HomeStateful extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController();
-
+    ScreenSize size = ScreenSize();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
         appBar: AppBar(
+          // leadingWidth: 0,
+          // leading: Container(),
+          // backgroundColor: Colors.white,
+          // title: Text('홍길동님 환영합니다.',
+          //     style: rTxtStyle.copyWith(fontSize: size.getSize(16))),
+          // actions: [
+          //   Icon(Icons.menu, size: size.getSize(20)),
+          //   Space(width: 11)
+          // ],
           toolbarHeight: 0.0,
           elevation: 0.0,
-          backgroundColor: Colors.white,
         ),
         body: Container(
             alignment: Alignment.center,
@@ -35,7 +45,6 @@ class HomeStateful extends StatelessWidget {
                 WelcomeText(),
                 Space(height: 12),
                 CalendarWidget(),
-                Space(height: 12),
                 Expanded(
                   child: SingleChildScrollView(
                       controller: scrollController,
@@ -72,7 +81,8 @@ class CalendarWidget extends StatelessWidget {
     ScreenSize size = ScreenSize();
     return Container(
       width: size.getSize(340.0),
-      height: size.getSize(140.0),
+      height: size.getSize(180.0),
+      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(14), size.getSize(8), size.getSize(8)),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -86,7 +96,78 @@ class CalendarWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Text('Calendar', style: rTxtStyle),
+      //   decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(size.getSize(10)),
+      //   ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  Container(
+                    // padding: EdgeInsets.only(top: size.getSize(10)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          DateTime.now().year.toString(),
+                          style: TextStyle(
+                              color: Color(0xFFFFE600),
+                              fontSize: size.getSize(34),
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Space(height: 10),
+                        Text(
+                          DateTime.now().month.toString(),
+                          style: TextStyle(
+                              color: Color(0xFF747474),
+                              fontSize: size.getSize(24),
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: size.getSize(3), bottom: size.getSize(5)),
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                )
+                ],
+              ),
+          ),
+          SizedBox(
+            width: size.getSize(220),
+            child: TableCalendar(
+              headerStyle: HeaderStyle(
+                headerMargin: EdgeInsets.all(0),
+                formatButtonVisible: false,
+                leftChevronIcon: Icon(Icons.arrow_left),
+                rightChevronIcon: Icon(Icons.arrow_right),
+                titleTextStyle: const TextStyle(fontSize: 17.0),
+              ),
+              headerVisible: false,
+              shouldFillViewport: true,
+              focusedDay: DateTime.now(),
+              firstDay: DateTime(1990),
+              lastDay: DateTime(2050),
+              onDaySelected: (selectedDay, focusedDay) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) => ScheduleHistoryScreenMaterialApp()));
+              },
+            ),
+          ),
+        ],
+      )
     );
   }
 }
@@ -143,7 +224,8 @@ class _ToDoBoxListSectionState extends State<ToDoBoxListSection> {
             if (toDoBoxList.length == 0) {
               return Container();
             } else {
-              return Padding(
+              return Container(
+                margin: EdgeInsets.only(top: size.getSize(12)),
                 padding: EdgeInsets.only(left: size.getSize(20), right: size.getSize(20)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +347,11 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   List<TextEditingController> toDoElmTEC = [];
 
   FocusNode titleFNode;
-  List<FocusNode> todoElmFNode = [];
+  //List<FocusNode> todoElmFNode = [];
+
+  bool editingYn;
+  int fieldCount = 0;
+  int nextIndex = 0;
 
   @override
   void initState() {
@@ -277,8 +363,13 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
     titleFNode = FocusNode();
     if(toDoElmList != null && toDoElmList.length != 0) {
       for (int i = 0; i < toDoElmList.length; i++) toDoElmTEC.add(TextEditingController(text: toDoElmList[i].content));
-      for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode.add(FocusNode());
+      //for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode.add(FocusNode());
     }
+    editingYn = false;
+    if(toDoElmList != null && toDoElmList.length != 0)
+      fieldCount = toDoElmList.length;
+    else
+      fieldCount = 0;
   }
 
   @override
@@ -287,14 +378,10 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
     titleFNode.dispose();
     if(toDoBox.toDoElmList != null && toDoBox.toDoElmList.length != 0) {
       for (int i = 0; i < toDoBox.toDoElmList.length; i++) toDoElmTEC[i].dispose();
-      for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode[i].dispose();
+      //for (int i = 0; i < toDoBox.toDoElmList.length; i++) todoElmFNode[i].dispose();
     }
     super.dispose();
   }
-  //
-  // _updateToDoBoxTitle(int toDoBoxId, String title) async {
-  //   bool result = await updateToDoBoxTitle(toDoBoxId, title);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +413,22 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               toDoBoxTitleInput(),
-              toDoBoxEditBtn(toDoBox),
+              editingYn
+              ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    editingYn = false;
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0, size.getSize(12), size.getSize(12), size.getSize(19.5)),
+                  child: Text(
+                    '완료',
+                    style: rTxtStyle.copyWith(fontSize: size.getSize(14), color: Colors.grey),
+                  ),
+                )
+              )
+              : toDoBoxEditBtn(toDoBox),
             ],
           ),
           toDoBox.toDoElmList != null && toDoBox.toDoElmList.length != 0
@@ -338,47 +440,43 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoBoxTitleInput() {
-    return Consumer<ToDoProvider>(
-        builder: (context, provider, child) {
-          return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
-                Space(width: 12),
-                Container(
-                  height: size.getSize(26.0),
-                  width: size.getSize(200),
-                  child: Focus(
-                    onFocusChange: (hasFocus) {
-                      if(!hasFocus) {
-                        // provider.updateToDoBoxTitle(provider.toDoBoxList[toDoBoxIndex].id, titleTEC.text);
-                        toDoBox.title = titleTEC.text;
-                        _toDoService.updateToDoBoxTitle(toDoBox.id, titleTEC.text);
-                      }
-                    },
-                    child: TextFormField(
-                      controller: titleTEC,
-                      focusNode: titleFNode,
-                      textAlign: TextAlign.left,
-                      minLines: 1,
-                      style: rTxtStyle,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: underlineFocusedBorder(),
-                      ),
-                    ),
-                  ),
-                )
-              ]
-          );
-        }
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+          Space(width: 12),
+          Container(
+            height: size.getSize(26.0),
+            width: size.getSize(200),
+            child: Focus(
+              onFocusChange: (hasFocus) {
+                if(!hasFocus) {
+                  // provider.updateToDoBoxTitle(provider.toDoBoxList[toDoBoxIndex].id, titleTEC.text);
+                  toDoBox.title = titleTEC.text;
+                  _toDoService.updateToDoBoxTitle(toDoBox.id, titleTEC.text);
+                }
+              },
+              child: TextFormField(
+                controller: titleTEC,
+                focusNode: titleFNode,
+                textAlign: TextAlign.left,
+                minLines: 1,
+                style: rTxtStyle,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: underlineFocusedBorder(),
+                ),
+              ),
+            ),
+          )
+        ]
     );
   }
 
   Widget toDoBoxEditBtn(ToDoBoxModel toDoBox) {
-    return Consumer2<ToDoProvider, UserProvider>(
-        builder: (context, toDoProvider, userProvider, child) {
+    return Consumer<UserProvider>(
+        builder: (context, userProvider, child) {
           return PopupMenuButton(
             // 팝업메뉴버튼 참고 https://codesinsider.com/flutter-popup-menu-button/
             padding: EdgeInsets.fromLTRB(size.getSize(0), size.getSize(0), size.getSize(0), size.getSize(0)),
@@ -388,17 +486,33 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(size.getSize(10))),
             ),
-            onSelected: (value) {
-              int toDoBoxId = toDoProvider.toDoBoxList[toDoBoxIndex].id;
+            onSelected: (value) async {
+              int toDoBoxId = toDoBox.id;
               switch(value) {
                 case '추가':
-                  toDoProvider.createToDoElmObj(toDoBoxId);
+                  int newToDoBoxId = await _toDoService.createToDoElmObj(toDoBoxId);
+                  setState(() {
+                    ToDoElmModel newToDoElm = new ToDoElmModel();
+                    newToDoElm.id = newToDoBoxId;
+                    newToDoElm.completed = false;
+                    toDoElmList.add(newToDoElm);
+
+                    toDoElmTEC.add(TextEditingController());
+                    fieldCount++;
+                    //todoElmFNode.add(FocusNode());
+                  });
                   break;
                 case '고정':
-                  toDoProvider.updateToDoBoxFixedYn(toDoBoxId);
+                  _toDoService.updateToDoBoxFixedYn(toDoBoxId);
+                  setState(() {
+                    toDoBox.fixed = !toDoBox.fixed;
+                  });
                   break;
                 default: // 편집
-                // todo elm 편집 가능하게(줄마다 햄버거 아이콘, 삭제 아이콘 나오게)
+                  // todo elm 편집 가능하게(줄마다 햄버거 아이콘, 삭제 아이콘 나오게)
+                  setState(() {
+                    editingYn = true;
+                  });
                   break;
               }
             },
@@ -438,48 +552,83 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoElmInputSection(List<ToDoElmModel> toDoElmList) {
-    return Consumer<ToDoProvider>(
-        builder: (context, provider, child) {
-          return Column(
-              children: toDoElmList.map((e) {
-                int index = toDoElmList.indexOf(e);
-                return Row(
-                  children: [
-                    GestureDetector(
-                        onTap: () async {
-                          provider.updateToDoElmCompleted(e.id);
-                          setState(() {
-                            e.completed = !e.completed;
-                          });
-                        },
-                        child: ToDoCheckBtn(value: e.completed)),
-                    Space(width: 10),
-                    Container(
-                      height: size.getSize(26.0),
-                      width: size.getSize(200),
-                      child: Focus(
-                        onFocusChange: (hasFocus) {
-                          if(!hasFocus) {
-                            provider.updateToDoElmContent(e.id, toDoElmTEC[index].text);
-                          }
-                        },
-                        child: TextFormField(
-                          controller: toDoElmTEC[index],
-                          focusNode: todoElmFNode[index],
-                          textAlign: TextAlign.left,
-                          minLines: 1,
-                          style: rTxtStyle,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: underlineFocusedBorder(),
-                          ),
+    int i = 0;
+    return Column(
+        children: toDoElmList.map((e) {
+          int index = toDoElmList.indexOf(e);
+          // if(toDoElmTEC.length < fieldCount) {
+          //   for(int i = toDoElmTEC.length; i < fieldCount; i++) {
+          //     toDoElmTEC.add(TextEditingController());
+          //   }
+          // }
+          int displayNumber = i + 1;
+          i++;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  GestureDetector(
+                      onTap: () async {
+                        _toDoService.updateToDoElmCompleted(e.id);
+                        setState(() {
+                          e.completed = !e.completed;
+                        });
+                      },
+                      child: ToDoCheckBtn(value: e.completed)),
+                  Space(width: 10),
+                  Container(
+                    height: size.getSize(26.0),
+                    width: size.getSize(200),
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        if (!hasFocus) {
+                          toDoElmList[index].content = toDoElmTEC[index].text;
+                          _toDoService.updateToDoElmContent(e.id, toDoElmTEC[index].text);
+                        }
+                      },
+                      child: TextFormField(
+                        controller: toDoElmTEC[index],
+                        //focusNode: todoElmFNode[index],
+                        textAlign: TextAlign.left,
+                        minLines: 1,
+                        style: rTxtStyle,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: underlineFocusedBorder(),
                         ),
                       ),
-                    )
-                  ],
-                );
-              }).toList());
-        }
-    );
+                    ),
+                  ),
+                ],
+              ),
+              editingYn
+                  ? GestureDetector(
+                    onTap: () async {
+                      setState(() {
+                        // await toDoElmTEC[index].dispose();
+                        //todoElmFNode[index].dispose();
+
+                        // when removing a TextField, you must do two things:
+                        // 1. decrement the number of controllers you should have (fieldCount)
+                        // 2. actually remove this field's controller from the list of controllers
+                        fieldCount--;
+                        toDoElmTEC.removeAt(index);
+                        toDoElmList.removeAt(index);
+
+                      });
+                      _toDoService.deleteTodoElm(e.id);
+
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(right: size.getSize(12)),
+                      child: Icon(
+                        Icons.delete,
+                        size: size.getSize(20)),
+                    ))
+                  : Container()
+            ],
+          );
+    }).toList());
   }
 }
