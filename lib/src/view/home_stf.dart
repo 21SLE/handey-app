@@ -2,47 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/todo/todo_model.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
-import 'package:handey_app/src/view/schedule_popup.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
+import 'package:handey_app/src/view/utils/calendar.dart';
+import 'package:handey_app/src/view/utils/costumed_appbar.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/business_logic/todo/todo_service.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 
 class HomeStateful extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController();
-    ScreenSize size = ScreenSize();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          // leadingWidth: 0,
-          // leading: Container(),
-          // backgroundColor: Colors.white,
-          // title: Text('홍길동님 환영합니다.',
-          //     style: rTxtStyle.copyWith(fontSize: size.getSize(16))),
-          // actions: [
-          //   Icon(Icons.menu, size: size.getSize(20)),
-          //   Space(width: 11)
-          // ],
-          toolbarHeight: 0.0,
-          elevation: 0.0,
-        ),
+        appBar: CostumedAppBar(),
         body: Container(
             alignment: Alignment.center,
             child: Column(
               children: [
-                Space(height: 20),
-                WelcomeText(),
                 Space(height: 12),
                 CalendarWidget(),
                 Expanded(
@@ -55,119 +40,6 @@ class HomeStateful extends StatelessWidget {
             )
         ),
       ),
-    );
-  }
-}
-
-class WelcomeText extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    ScreenSize size = ScreenSize();
-    return Container(
-      padding: EdgeInsets.only(left: size.getSize(18)),
-      child: Row(
-        children: [
-          Text('홍길동님 환영합니다.',
-              style: rTxtStyle.copyWith(fontSize: 16))
-        ],
-      ),
-    );
-  }
-}
-
-class CalendarWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    ScreenSize size = ScreenSize();
-    return Container(
-      width: size.getSize(340.0),
-      height: size.getSize(180.0),
-      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(14), size.getSize(8), size.getSize(8)),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(size.getSize(10)),
-        border: Border.all(color: Colors.white, width: 2.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            offset: Offset(0.5, 0.5), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-      ),
-      //   decoration: BoxDecoration(
-      //     borderRadius: BorderRadius.circular(size.getSize(10)),
-      //   ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                  Container(
-                    // padding: EdgeInsets.only(top: size.getSize(10)),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          DateTime.now().year.toString(),
-                          style: TextStyle(
-                              color: Color(0xFFFFE600),
-                              fontSize: size.getSize(34),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Space(height: 10),
-                        Text(
-                          DateTime.now().month.toString(),
-                          style: TextStyle(
-                              color: Color(0xFF747474),
-                              fontSize: size.getSize(24),
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: size.getSize(3), bottom: size.getSize(5)),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                )
-                ],
-              ),
-          ),
-          SizedBox(
-            width: size.getSize(220),
-            child: TableCalendar(
-              headerStyle: HeaderStyle(
-                headerMargin: EdgeInsets.all(0),
-                formatButtonVisible: false,
-                leftChevronIcon: Icon(Icons.arrow_left),
-                rightChevronIcon: Icon(Icons.arrow_right),
-                titleTextStyle: const TextStyle(fontSize: 17.0),
-              ),
-              headerVisible: false,
-              shouldFillViewport: true,
-              focusedDay: DateTime.now(),
-              firstDay: DateTime(1990),
-              lastDay: DateTime(2050),
-              onDaySelected: (selectedDay, focusedDay) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (BuildContext context) => ScheduleHistoryScreenMaterialApp()));
-              },
-            ),
-          ),
-        ],
-      )
     );
   }
 }
@@ -509,7 +381,6 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                   });
                   break;
                 default: // 편집
-                  // todo elm 편집 가능하게(줄마다 햄버거 아이콘, 삭제 아이콘 나오게)
                   setState(() {
                     editingYn = true;
                   });
@@ -552,17 +423,9 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
   }
 
   Widget toDoElmInputSection(List<ToDoElmModel> toDoElmList) {
-    int i = 0;
     return Column(
         children: toDoElmList.map((e) {
           int index = toDoElmList.indexOf(e);
-          // if(toDoElmTEC.length < fieldCount) {
-          //   for(int i = toDoElmTEC.length; i < fieldCount; i++) {
-          //     toDoElmTEC.add(TextEditingController());
-          //   }
-          // }
-          int displayNumber = i + 1;
-          i++;
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
