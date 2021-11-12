@@ -7,6 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../schedule_popup.dart';
 
 class CalendarWidget extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     ScreenSize size = ScreenSize();
@@ -80,8 +81,16 @@ class CalendarWidget extends StatelessWidget {
                 firstDay: DateTime(1990),
                 lastDay: DateTime(2050),
                 onDaySelected: (selectedDay, focusedDay) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) => ScheduleHistoryScreenMaterialApp()));
+                  showModalBottomSheet<dynamic>(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(size.getSize(24)), topRight: Radius.circular(size.getSize(24)))),
+                      builder: (context) => Wrap(
+                        children: [
+                          ScheduleHistoryScreen(selectedDay: selectedDay),
+                        ],
+                      ));
                 },
               ),
             ),

@@ -23,6 +23,7 @@ class UserProvider extends ChangeNotifier {
       HttpClient httpClient = HttpClient();
       httpClient.accessToken = data['accessToken'];
       this.user = await getUserInfo(data['userId']);
+      this.user.userName = data['userName'] ?? '';
       this.user.userId = data['userId'];
       this.user.email = email;
       print(this.user);

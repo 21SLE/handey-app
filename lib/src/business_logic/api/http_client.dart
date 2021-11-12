@@ -49,8 +49,8 @@ class HttpClient {
         body: jsonEncode(body), headers: headers);
     print('url : ${baseUrl + url}');
     print('statusCode : ${response.statusCode}');
-    print('response body : ${response.body}');
-    return jsonDecode(response.body);
+    print('response body : ${utf8.decode(response.bodyBytes)}');
+    return jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   Future<Map<String, dynamic>> putRequest(

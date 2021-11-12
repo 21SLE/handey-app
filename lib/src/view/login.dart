@@ -187,7 +187,6 @@ class _LoginState extends State<Login> {
       print(emailTEC.text);
       print(pwTEC.text);
       bool emailChecked = await userProvider.checkEmailDuplication(emailTEC.text);
-      // bool emailChecked = true;
       if (emailChecked) {
         bool loginSucceeded = await userProvider.signIn(email: emailTEC.text, password: pwTEC.text);
         userProvider.userNotifyListeners();

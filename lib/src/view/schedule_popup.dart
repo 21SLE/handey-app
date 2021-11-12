@@ -1,82 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:handey_app/src/view/utils/calendar.dart';
-import 'package:handey_app/src/view/utils/space.dart';
-
-class ScheduleHistoryScreenMaterialApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ScheduleHistoryScreen(),
-    );
-  }
-}
-
+import 'package:handey_app/src/view/utils/screen_size.dart';
 
 class ScheduleHistoryScreen extends StatefulWidget {
+  ScheduleHistoryScreen({@required this.selectedDay});
+
+  final DateTime selectedDay;
+
   @override
   _ScheduleHistoryScreenState createState() => new _ScheduleHistoryScreenState();
 }
 
-class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen> with SingleTickerProviderStateMixin {
-  TabController _controller;
+class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
+    with SingleTickerProviderStateMixin {
+  ScreenSize size;
+  TabController _tabController;
+
+  DateTime _selectedDay;
 
   @override
   void initState() {
     super.initState();
-    _controller = new TabController(length: 2, vsync: this);
+    _tabController = new TabController(length: 2, vsync: this);
+    _selectedDay = widget.selectedDay;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-      ),
-      body: Column(
+    size = ScreenSize();
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.58,
+      child: Column(
         children: [
-          CalendarWidget(),
-          Space(height: 10),
-          Container(
-          decoration: new BoxDecoration(color: Theme.of(context).primaryColor),
-          child: new TabBar(
-            controller: _controller,
-            tabs: [
-              new Tab(
-                icon: const Icon(Icons.home),
-                text: 'Address',
-              ),
-              new Tab(
-                icon: const Icon(Icons.my_location),
-                text: 'Location',
-              ),
-            ],
-          ),
-        ),
-          Container(
-            height: 80.0,
-            child: new TabBarView(
-              controller: _controller,
-              children: <Widget>[
-                new Card(
-                  child: new ListTile(
-                    leading: const Icon(Icons.home),
-                    title: new TextField(
-                      decoration: const InputDecoration(hintText: 'Search for address...'),
-                    ),
-                  ),
-                ),
-                new Card(
-                  child: new ListTile(
-                    leading: const Icon(Icons.location_on),
-                    title: new Text('Latitude: 48.09342\nLongitude: 11.23403'),
-                    trailing: new IconButton(icon: const Icon(Icons.my_location), onPressed: () {}),
-                  ),
-                ),
-              ],
-            ),
-          ),],
-      )
+          tabMenu(),
+          tabBody(_selectedDay),
+        ],
+      ),
     );
+  }
+
+  Widget tabMenu() {
+    return Container(
+      height: size.getSize(60),
+      child: TabBar(
+        controller: _tabController,
+        indicatorColor: Colors.yellow,
+        labelColor: Colors.black,
+        unselectedLabelColor: Colors.grey,
+        tabs: [
+          Tab(
+            child: Text('일정'),
+          ),
+          Tab(
+            child: Text('History'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget tabBody(DateTime selectedDay) {
+    return Container(
+      height: size.getSize(100),
+      child: TabBarView(
+        controller: _tabController,
+        children: [
+          scheduleSection(selectedDay),
+          historySection()
+        ],
+      ),
+    );
+  }
+
+  Widget scheduleSection(DateTime selectedDay) {
+    return Container(
+      alignment: Alignment.center,
+      child: Text(selectedDay.toString()),
+    );
+  }
+
+  Widget historySection() {
+    return Container();
   }
 }

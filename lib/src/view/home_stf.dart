@@ -19,28 +19,28 @@ class HomeStateful extends StatelessWidget {
   Widget build(BuildContext context) {
     ScrollController scrollController = ScrollController();
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Scaffold(
-        appBar: CostumedAppBar(),
-        body: Container(
-            alignment: Alignment.center,
-            child: Column(
-              children: [
-                Space(height: 12),
-                CalendarWidget(),
-                Expanded(
-                  child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: ToDoBoxListSection()
-                  ),
-                )
-              ],
-            )
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          appBar: CostumedAppBar(),
+          body: Container(
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Space(height: 12),
+                  CalendarWidget(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: ToDoBoxListSection()
+                    ),
+                  )
+                ],
+              )
+          ),
         ),
-      ),
-    );
+      );
   }
 }
 
