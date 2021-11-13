@@ -5,7 +5,7 @@ HttpClient _httpClient = HttpClient();
 
 /// 회원별 일정 list 불러오기
 Future<List<ScheduleEventModel>> getScheduleEventList(int userId) async {
-  Map<String, dynamic> data = await _httpClient.getRequest('/user/$userId/schedule', tokenYn: true);
+  Map<String, dynamic> data = await _httpClient.getRequest('/user/$userId/schedules', tokenYn: true);
 
   if (data['success']) {
     List<dynamic> scheduleListData = data['data'];
