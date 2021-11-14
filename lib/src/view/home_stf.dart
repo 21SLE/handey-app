@@ -93,22 +93,18 @@ class _ToDoBoxListSectionState extends State<ToDoBoxListSection> {
           }
           if (snapshot.hasData) {
             toDoBoxList = snapshot.data;
-            if (toDoBoxList.length == 0) {
-              return Container();
-            } else {
-              return Container(
-                margin: EdgeInsets.only(top: size.getSize(12)),
-                padding: EdgeInsets.only(left: size.getSize(20), right: size.getSize(20)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    toDoBoxListView(),
-                    createToDoBoxBtn(),
-                    Space(height: size.getSize(20))
-                  ],
-                ),
-              );
-            }
+            return Container(
+              margin: EdgeInsets.only(top: size.getSize(12)),
+              padding: EdgeInsets.only(left: size.getSize(20), right: size.getSize(20)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  toDoBoxListView(),
+                  createToDoBoxBtn(),
+                  Space(height: size.getSize(20))
+                ],
+              ),
+            );
           } else {
             return Container(
                 height: size.getSize(300),
@@ -124,6 +120,7 @@ class _ToDoBoxListSectionState extends State<ToDoBoxListSection> {
         setState(() {
           ToDoBoxModel newToDoBox = new ToDoBoxModel();
           newToDoBox.id = newToDoBoxId;
+          newToDoBox.toDoElmList = new List<ToDoElmModel>.empty(growable: true);
           toDoBoxList.add(newToDoBox);
         });
       },

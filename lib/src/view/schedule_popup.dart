@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:handey_app/src/business_logic/history_after/afterhst_model.dart';
+import 'package:handey_app/src/business_logic/history_after/afterhst_service.dart';
 import 'package:handey_app/src/business_logic/history_todo/todohst_model.dart';
 import 'package:handey_app/src/business_logic/history_todo/todohst_service.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
@@ -144,6 +146,12 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
   }
 
   @override
+  void dispose() {
+    _toDoHistoryScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     size = ScreenSize();
 
@@ -155,11 +163,7 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
           }
           if (snapshot.hasData) {
             toDoHistoryList = snapshot.data;
-            if (toDoHistoryList.length == 0) {
-              return Container();
-            } else {
-              return historyToDoSection(toDoHistoryList);
-            }
+            return historyToDoSection(toDoHistoryList);
           } else {
             return Container(
                 height: size.getSize(300),
@@ -253,29 +257,117 @@ class HistoryAfterSection extends StatefulWidget {
 
 class _HistoryAfterSectionState extends State<HistoryAfterSection> {
   ScreenSize size;
+  int userId;
+
+  List<AfterHistoryModel> afterHistoryList;
+  Future<List<AfterHistoryModel>> futureAfterHistoryList;
+
+  String selectedDayString;
+
+  ScrollController _afterHistoryScrollController = ScrollController();
+
+  _fetchData() {
+    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
+    selectedDayString = DateFormat("yyyy-MM-dd").format(widget.selectedDay);
+    futureAfterHistoryList = getAfterHistoryList(userId, selectedDayString);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  @override
+  void dispose() {
+    _afterHistoryScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     size = ScreenSize();
     return Expanded(
-      child: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(0), size.getSize(12)),
-        margin: EdgeInsets.only(bottom: size.getSize(8)),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.98),
-          borderRadius: BorderRadius.circular(size.getSize(10)),
-          border: Border.all(color: Colors.white, width: 3.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.6),
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 6.0,
-            ),
-          ],
-        ),
-        child: Text('After Section', style: rTxtStyle),
-      ),
+      child: FutureBuilder(
+          future: futureAfterHistoryList,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasError) {
+              handleException(context, snapshot.error);
+            }
+            if (snapshot.hasData) {
+              afterHistoryList = snapshot.data;
+              return historyAfterSection(afterHistoryList);
+            } else {
+              return Container(
+                  height: size.getSize(300),
+                  child: Center(child: CircularProgressIndicator()));
+            }
+          })
     );
+  }
+
+  Widget historyAfterSection(List<AfterHistoryModel> afterHistoryList) {
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(0), size.getSize(12)),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.98),
+        borderRadius: BorderRadius.circular(size.getSize(10)),
+        border: Border.all(color: Colors.white, width: 3.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.6),
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 6.0,
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
+          controller: _afterHistoryScrollController,
+          child: ListView.separated(
+              padding: EdgeInsets.all(0.0),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: afterHistoryList.length,
+              itemBuilder: (context, index) {
+                return afterElement(afterHistoryList[index], afterHistoryList[index].subtitle);
+              },
+              separatorBuilder: (context, index) {
+                return Space(height: 8);
+              })
+      )
+    );
+  }
+
+  Widget afterElement(AfterHistoryModel afterHistory, bool subtitleYn) {
+    return subtitleYn
+        ? Container(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    height: size.getSize(22),
+                    width: size.getSize(8),
+                    color: Colors.yellow),
+                Space(width: 12),
+                Text(afterHistory.content ?? '', style: rTxtStyle)
+              ],
+            ),
+          )
+        : Padding(
+            padding:
+                EdgeInsets.only(top: size.getSize(2), bottom: size.getSize(2)),
+            child: Row(
+              children: [
+                ToDoCheckBtn(value: true),
+                Space(width: 10),
+                Text(
+                  afterHistory.content ?? '',
+                  style: rTxtStyle,
+                )
+              ],
+            ),
+          );
   }
 }
