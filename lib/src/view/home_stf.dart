@@ -321,7 +321,6 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
             child: Focus(
               onFocusChange: (hasFocus) {
                 if(!hasFocus) {
-                  // provider.updateToDoBoxTitle(provider.toDoBoxList[toDoBoxIndex].id, titleTEC.text);
                   toDoBox.title = titleTEC.text;
                   _toDoService.updateToDoBoxTitle(toDoBox.id, titleTEC.text);
                 }

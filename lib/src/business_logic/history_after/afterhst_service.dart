@@ -10,7 +10,6 @@ Future<List<AfterHistoryModel>> getAfterHistoryList(int userId, String searchDt)
     List<dynamic> afterHistoryListData = data['data'];
     List<AfterHistoryModel> afterHistoryList = afterHistoryListData.map((e) => AfterHistoryModel.fromJson(e)).toList();
 
-    print(data['data']);
     return afterHistoryList;
   } else {
     return [];
