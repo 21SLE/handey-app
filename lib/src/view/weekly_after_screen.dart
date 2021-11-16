@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:handey_app/src/business_logic/memo/memo_model.dart';
 import 'package:handey_app/src/business_logic/memo/memo_service.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
+import 'package:handey_app/src/business_logic/weekly/weekly_model.dart';
+import 'package:handey_app/src/business_logic/weekly/weekly_service.dart';
 import 'package:handey_app/src/view/utils/costumed_appbar.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
@@ -46,24 +48,75 @@ class WeeklyAfterSection extends StatefulWidget {
 
 class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   ScreenSize size;
+  int userId;
+  List<WeeklyBoxModel> weeklyBoxList;
+  List<WeeklyBoxModel> afterBoxList = new List<WeeklyBoxModel>.empty(growable: true);
+  Future<List<WeeklyBoxModel>> futureWeeklyBoxList;
+
+
+
+  _fetchData() {
+    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
+    futureWeeklyBoxList = getWeeklyBoxList(userId);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
     size = ScreenSize();
 
-    return Column(
-      children: [
-        weeklySection(),
-        Space(height: 16),
-        afterSection()
-      ],
-    );
+    return FutureBuilder(
+        future: futureWeeklyBoxList,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasError) {
+            handleException(context, snapshot.error);
+          }
+          if (snapshot.hasData) {
+            weeklyBoxList = snapshot.data;
+
+            weeklyBoxList.forEach((weeklyBox) {
+              WeeklyBoxModel newAfterBox = new WeeklyBoxModel();
+              newAfterBox.weeklyElmList = new List<WeeklyElmModel>.empty(growable: true);
+              bool isThereCompletedElm = false;
+              weeklyBox.weeklyElmList.forEach((weeklyElm) {
+                if(weeklyElm.completed) {
+                  isThereCompletedElm = true;
+                  WeeklyElmModel newAfterElm = new WeeklyElmModel();
+                  newAfterElm.completed = true;
+                  newAfterElm.content = weeklyElm.content;
+                  newAfterBox.weeklyElmList.add(newAfterElm);
+
+                }
+              });
+              if(isThereCompletedElm)
+                afterBoxList.add(newAfterBox);
+            });
+
+            return Column(
+              children: [
+                weeklySection(),
+                Space(height: 16),
+                afterSection()
+              ],
+            );
+          } else {
+            return Container(
+                height: size.getSize(300),
+                child: Center(child: CircularProgressIndicator()));
+          }
+        });
   }
 
   Widget weeklySection() {
     return Container(
       width: size.getSize(350.0),
       height: size.getSize(250.0),
+      padding: EdgeInsets.all(size.getSize(8)),
       margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.98),
@@ -78,14 +131,58 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
         ],
       ),
       alignment: Alignment.center,
-      child: Text('weekly'),
+      child: Column(
+        children: [
+          sectionTitle(true),
+          Divider(thickness: 2),
+          weeklyBoxListSection()
+        ],
+      )
     );
+  }
+
+  Widget sectionTitle(bool weeklySectionTitle) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(weeklySectionTitle ? 'Weekly' : 'After', style: rTxtStyle.copyWith(fontSize: size.getSize(20))),
+        weeklySectionTitle ? createWeeklyBoxBtn() : Container(),
+      ],
+    );
+  }
+
+  Widget createWeeklyBoxBtn() {
+    return GestureDetector(
+      onTap: () async {
+        int newWeeklyBoxId = await createWeeklyBoxObj(userId);
+        setState(() {
+          WeeklyBoxModel newWeeklyBox = new WeeklyBoxModel();
+          newWeeklyBox.id = newWeeklyBoxId;
+          newWeeklyBox.weeklyElmList = new List<WeeklyElmModel>.empty(growable: true);
+          weeklyBoxList.add(newWeeklyBox);
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        width: size.getSize(24.0),
+        height: size.getSize(24.0),
+        child: Icon(
+          Icons.add,
+          size: size.getSize(20),
+        ),
+      ),
+    );
+  }
+
+  Widget weeklyBoxListSection() {
+    return Container();
   }
 
   Widget afterSection() {
     return Container(
       width: size.getSize(350.0),
       height: size.getSize(150.0),
+      padding: EdgeInsets.all(size.getSize(8)),
       margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.98),
@@ -100,8 +197,17 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
         ],
       ),
       alignment: Alignment.center,
-      child: Text('after'),
+        child: Column(
+          children: [
+            sectionTitle(false),
+            Divider(thickness: 2),
+            afterBoxListSection()
+          ],
+        )
     );
+  }
+  Widget afterBoxListSection() {
+    return Container();
   }
 }
 
