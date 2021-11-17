@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
-import 'package:handey_app/src/view/home.dart';
-import 'package:handey_app/src/view/home_stf.dart';
 import 'package:handey_app/src/view/navigationbar.dart';
 import 'package:handey_app/src/view/signup.dart';
 import 'package:handey_app/src/view/utils/border.dart';
@@ -189,18 +187,13 @@ class _LoginState extends State<Login> {
       print(emailTEC.text);
       print(pwTEC.text);
       bool emailChecked = await userProvider.checkEmailDuplication(emailTEC.text);
-      // bool emailChecked = true;
       if (emailChecked) {
         bool loginSucceeded = await userProvider.signIn(email: emailTEC.text, password: pwTEC.text);
         userProvider.userNotifyListeners();
         if (loginSucceeded) {
           ///로그인 성공
           // Navigator.pushReplacement(context,
-          //     MaterialPageRoute(builder: (BuildContext context) => Home()));
-          // Navigator.push(context,
-          //     MaterialPageRoute(builder: (BuildContext context) => Home()));
-          // Navigator.push(context,
-          //     MaterialPageRoute(builder: (BuildContext context) => HomeStateful()));
+          //     MaterialPageRoute(builder: (BuildContext context) => NavigationBar()));
           Navigator.push(context,
               MaterialPageRoute(builder: (BuildContext context) => NavigationBar()));
         } else {
