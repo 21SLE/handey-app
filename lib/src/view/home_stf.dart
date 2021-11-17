@@ -220,7 +220,6 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
 
   bool editingYn;
   int fieldCount = 0;
-  int nextIndex = 0;
 
   @override
   void initState() {
