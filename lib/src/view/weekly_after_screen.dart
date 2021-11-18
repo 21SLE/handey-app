@@ -71,7 +71,7 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   @override
   Widget build(BuildContext context) {
     size = ScreenSize();
-
+    afterBoxList = new List<WeeklyBoxModel>.empty(growable: true);
     return FutureBuilder(
         future: futureWeeklyBoxList,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -84,33 +84,51 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
               fieldCount = weeklyBoxList.length;
             else
               fieldCount = 0;
-            print('---------------------------------------------------------');
-            print(fieldCount);
 
             weeklyBoxList.forEach((weeklyBox) {
               WeeklyBoxModel newAfterBox = new WeeklyBoxModel();
-              newAfterBox.weeklyElmList = new List<WeeklyElmModel>.empty(growable: true);
+              newAfterBox.id = weeklyBox.id;
+              newAfterBox.title = weeklyBox.title;
+              newAfterBox.weeklyElmList =
+              new List<WeeklyElmModel>.empty(growable: true);
               bool isThereCompletedElm = false;
               weeklyBox.weeklyElmList.forEach((weeklyElm) {
-                if(weeklyElm.completed) {
+                if (weeklyElm.completed) {
                   isThereCompletedElm = true;
                   WeeklyElmModel newAfterElm = new WeeklyElmModel();
                   newAfterElm.completed = true;
+                  newAfterElm.id = weeklyElm.id;
                   newAfterElm.content = weeklyElm.content;
                   newAfterBox.weeklyElmList.add(newAfterElm);
-
                 }
               });
-              if(isThereCompletedElm)
-                afterBoxList.add(newAfterBox);
+              if (isThereCompletedElm) afterBoxList.add(newAfterBox);
             });
 
-            return Column(
-              children: [
-                weeklySection(),
-                Space(height: 16),
-                afterSection()
-              ],
+            return Container(
+              width: size.getSize(350.0),
+              // height: size.getSize(420.0),
+              padding: EdgeInsets.all(size.getSize(8)),
+              margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.98),
+                borderRadius: BorderRadius.circular(size.getSize(10)),
+                border: Border.all(color: Colors.white, width: 3.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.6),
+                    offset: Offset(0.0, 1.0), //(x,y)
+                    blurRadius: 6.0,
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  weeklySection(),
+                  // Space(height: 16),
+                  afterSection()
+                ],
+              ),
             );
           } else {
             return Container(
@@ -120,25 +138,19 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
         });
   }
 
+  checkIfThereExistsSameAfterBoxAlready(int weeklyBoxId) {
+    int afterBoxIndex = -1;
+    afterBoxList.forEach((element) {
+      if(element.id == weeklyBoxId)
+        afterBoxIndex = afterBoxList.indexOf(element);
+        return afterBoxIndex;
+    });
+    return afterBoxIndex;
+  }
+
   Widget weeklySection() {
     return Container(
-      width: size.getSize(350.0),
       height: size.getSize(250.0),
-      padding: EdgeInsets.all(size.getSize(8)),
-      margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.98),
-        borderRadius: BorderRadius.circular(size.getSize(10)),
-        border: Border.all(color: Colors.white, width: 3.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
       child: Column(
         children: [
           sectionTitle(true),
@@ -196,11 +208,34 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
         padding: EdgeInsets.only(top: size.getSize(0)),
         itemCount: weeklyBoxList.length,
         itemBuilder: (context, index) {
-          return WeeklyBoxTile(
-              weeklyBoxIndex: index,
-              weeklyBox: weeklyBoxList[index],
-              weeklyElmList: weeklyBoxList[index].weeklyElmList,
-              deleteWeeklyBoxFunc: deleteWeeklyBoxFunc);
+          return Dismissible(
+            key: UniqueKey(),
+            child: WeeklyBoxTile(
+                weeklyBox: weeklyBoxList[index],
+                weeklyElmList: weeklyBoxList[index].weeklyElmList,
+                addAfterElm: addAfterElm),
+              onDismissed: (direction) {
+                // 해당 index의 item을 리스트에서 삭제
+                deleteWeeklyBox(userId, weeklyBoxList[index].id);
+                setState(() {
+                  weeklyBoxList.removeAt(index);
+                });
+              },
+            direction: DismissDirection.endToStart,
+            background: Container(
+                decoration: BoxDecoration(
+                    color: Color(0xFFBD2A24),
+                    borderRadius: BorderRadius.circular(size.getSize(10))),
+                margin: EdgeInsets.only(bottom: size.getSize(8)),
+                padding: EdgeInsets.only(right: size.getSize(20)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.delete),
+                  ],
+                )
+            ),
+          );
         },
         separatorBuilder: (context, index) {
           return Divider(thickness: 1.0);
@@ -208,53 +243,64 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
     );
   }
 
-  deleteWeeklyBoxFunc(int index) {
-    setState(() {
-      fieldCount--;
-      weeklyBoxList.removeAt(index);
-    });
-  }
-
   Widget afterSection() {
     return Container(
-      width: size.getSize(350.0),
-      height: size.getSize(150.0),
-      padding: EdgeInsets.all(size.getSize(8)),
-      margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.98),
-        borderRadius: BorderRadius.circular(size.getSize(10)),
-        border: Border.all(color: Colors.white, width: 3.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
+        height: size.getSize(150.0),
         child: Column(
           children: [
+            Divider(thickness: 2),
             sectionTitle(false),
             Divider(thickness: 2),
-            afterBoxListSection()
+            Expanded(
+              child: SingleChildScrollView(
+                  child: afterBoxListSection()
+              ),
+            )
           ],
         )
     );
   }
   Widget afterBoxListSection() {
-    return Container();
+    return ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: EdgeInsets.only(top: size.getSize(0)),
+        itemCount: afterBoxList.length,
+        itemBuilder: (context, index) {
+          return AfterBoxTile(
+              afterBox: afterBoxList[index],
+              afterElmList: afterBoxList[index].weeklyElmList);
+        }
+    );
+  }
+
+  addAfterElm(WeeklyBoxModel newAfterBox, WeeklyElmModel newAfterElm) {
+    bool isThereAfterBoxAlready = false;
+    afterBoxList.forEach((afterBox) {
+      if(afterBox.id == newAfterBox.id) {
+        isThereAfterBoxAlready = true;
+        setState(() {
+          afterBox.weeklyElmList.add(newAfterElm);
+        });
+      }
+    });
+    if(isThereAfterBoxAlready == false) {
+      WeeklyBoxModel afterBox = new WeeklyBoxModel();
+      afterBox.id = newAfterBox.id;
+      afterBox.title = newAfterBox.title;
+      afterBox.weeklyElmList = new List<WeeklyElmModel>.empty(growable: true);
+      afterBox.weeklyElmList.add(newAfterElm);
+      afterBoxList.add(afterBox);
+    }
   }
 }
 
 class WeeklyBoxTile extends StatefulWidget {
-  WeeklyBoxTile({@required this.weeklyBoxIndex, @required this.weeklyBox, @required this.weeklyElmList, @required this.deleteWeeklyBoxFunc});
+  WeeklyBoxTile({@required this.weeklyBox, @required this.weeklyElmList, @required this.addAfterElm});
 
-  final int weeklyBoxIndex;
   final WeeklyBoxModel weeklyBox;
   final List<WeeklyElmModel> weeklyElmList;
-  final Function(int) deleteWeeklyBoxFunc;
+  final Function(WeeklyBoxModel, WeeklyElmModel) addAfterElm;
 
   @override
   _WeeklyBoxTileState createState() => _WeeklyBoxTileState();
@@ -290,7 +336,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
       fieldCount = weeklyElmList.length;
     else
       fieldCount = 0;
-    weeklyBoxIndex = widget.weeklyBoxIndex;
   }
 
   @override
@@ -309,8 +354,8 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
     return Container(
       width: size.getSize(350.0),
       // height: size.getSize(120.0),
-      padding: EdgeInsets.fromLTRB(size.getSize(5), size.getSize(5),
-          size.getSize(0), size.getSize(5)),
+      padding: EdgeInsets.fromLTRB(size.getSize(5), size.getSize(00),
+          size.getSize(0), size.getSize(0)),
 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -407,12 +452,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                     //weeklyElmFNode.add(FocusNode());
                   });
                   break;
-                case '삭제':
-                  userId = Provider.of<UserProvider>(context, listen: false).user.userId;
-                  deleteWeeklyBox(userId, weeklyBox.id);
-                  widget.deleteWeeklyBoxFunc(weeklyBoxIndex);
-
-                  break;
                 default: // 편집
                   setState(() {
                     editingYn = true;
@@ -425,11 +464,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                 height: size.getSize(24),
                 child: weeklyMenuItem(Icon(Icons.add, size: size.getSize(16)), '추가'),
                 value: '추가',
-              ),
-              PopupMenuItem(
-                height: size.getSize(24),
-                child: weeklyMenuItem(Icon(Icons.edit, size: size.getSize(16)), '삭제'), /* weeklyelm 자리 이동, weeklyelm 삭제가능하게*/
-                value: '삭제',
               ),
               PopupMenuItem(
                 height: size.getSize(24),
@@ -467,6 +501,8 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                   GestureDetector(
                       onTap: () async {
                         updateWeeklyElmCompleted(e.id);
+                        widget.addAfterElm(weeklyBox, e);
+
                         setState(() {
                           e.completed = !e.completed;
                         });
@@ -504,10 +540,8 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                       fieldCount--;
                       weeklyElmTEC.removeAt(index);
                       weeklyElmList.removeAt(index);
-
                     });
                     deleteWeeklyElm(e.id);
-
                   },
                   child: Padding(
                     padding: EdgeInsets.only(right: size.getSize(12)),
@@ -519,6 +553,83 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
             ],
           );
         }).toList());
+  }
+}
+
+class AfterBoxTile extends StatefulWidget {
+  AfterBoxTile({@required this.afterBox, @required this.afterElmList});
+
+  final WeeklyBoxModel afterBox;
+  final List<WeeklyElmModel> afterElmList;
+
+  @override
+  _AfterBoxTileState createState() => _AfterBoxTileState();
+}
+
+class _AfterBoxTileState extends State<AfterBoxTile> {
+  ScreenSize size;
+  int useId;
+
+  WeeklyBoxModel afterBox;
+  List<WeeklyElmModel> afterElmList;
+
+  @override
+  void initState() {
+    super.initState();
+    afterBox = widget.afterBox;
+    afterElmList = widget.afterElmList;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    size = ScreenSize();
+    return Container(
+      width: size.getSize(350.0),
+      // height: size.getSize(120.0),
+      padding: EdgeInsets.fromLTRB(size.getSize(5), size.getSize(0),
+          size.getSize(0), size.getSize(5)),
+      child: Column(
+        children: [
+          afterBoxTitle(),
+          afterElmList != null && afterElmList.length != 0
+              ? afterElmListSection()
+              : Container()
+        ],
+      ),
+    );
+  }
+
+  Widget afterBoxTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(afterBox.title ?? '',
+            style: rTxtStyle.copyWith(
+                color: Color(0xFFF5CE08), fontSize: size.getSize(20)))
+      ],
+    );
+  }
+
+  Widget afterElmListSection() {
+    return Column(
+      children: afterElmList.map((e) {
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: size.getSize(2)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text('-', style: rTxtStyle,),
+                  Space(width: 5),
+                  Text(e.content ?? '', style: rTxtStyle.copyWith(color: Colors.grey,fontSize: size.getSize(16)),)
+                ],
+              )
+            ],
+          ),
+        );
+      }).toList(),
+    );
   }
 }
 
