@@ -5,7 +5,7 @@ import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
 import 'package:provider/provider.dart';
 
-class CostumedAppBar extends StatelessWidget with PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/handey_app.dart';
+import 'package:handey_app/src/view/utils/popup_custom.dart';
 import 'package:handey_app/src/view/utils/popup_returnYn.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class CostumedDrawer extends StatelessWidget {
+class CustomDrawer extends StatelessWidget {
+  final String _baseUrl = 'http://10.0.2.2:3000';
+
   @override
   Widget build(BuildContext context) {
     ScreenSize size = ScreenSize();
@@ -30,6 +34,7 @@ class CostumedDrawer extends StatelessWidget {
             title: Text('설정', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
             onTap: () {
               Navigator.pop(context);
+              // _launchURL(context, _baseUrl + '/setting');
             },
           ),
           ListTile(
@@ -42,12 +47,14 @@ class CostumedDrawer extends StatelessWidget {
             title: Text('휴지통', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
             onTap: () {
               Navigator.pop(context);
+              _launchURL(context, _baseUrl + '/trash');
             },
           ),
           ListTile(
             title: Text('정보', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
             onTap: () {
               Navigator.pop(context);
+              // _launchURL(context, _baseUrl + '/info');
             },
           ),
           ListTile(
@@ -75,3 +82,11 @@ void returnToLoginPage({BuildContext context, Widget pageRef}) {
       MaterialPageRoute(builder: (context) => pageRef),
           (Route<dynamic> route) => false);
 }
+
+void _launchURL(BuildContext context, String url) async =>
+    await canLaunch(url)
+        ? await launch(url)
+        : showCustomPopUp(
+        context: context,
+        title: '해당 페이지를\n열 수 없습니다.',
+        confirmText: '확인');
