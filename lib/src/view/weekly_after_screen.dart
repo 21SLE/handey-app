@@ -7,7 +7,6 @@ import 'package:handey_app/src/business_logic/weekly/weekly_model.dart';
 import 'package:handey_app/src/business_logic/weekly/weekly_service.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
-import 'package:handey_app/src/view/utils/costumed_appbar.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
@@ -23,7 +22,11 @@ class WeeklyAfterScreen extends StatelessWidget {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: CostumedAppBar(),
+        appBar: AppBar(
+          toolbarHeight: 0.0,
+          elevation: 0.0,
+          backgroundColor: Colors.white,
+        ),
         body: Container(
             alignment: Alignment.center,
             child: SingleChildScrollView(

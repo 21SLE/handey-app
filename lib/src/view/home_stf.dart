@@ -5,7 +5,6 @@ import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
 import 'package:handey_app/src/view/utils/calendar.dart';
-import 'package:handey_app/src/view/utils/costumed_appbar.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/business_logic/todo/todo_service.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
@@ -23,7 +22,11 @@ class HomeStateful extends StatelessWidget {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          appBar: CostumedAppBar(),
+          appBar: AppBar(
+            toolbarHeight: 0.0,
+            elevation: 0.0,
+            backgroundColor: Colors.white,
+          ),
           body: Container(
               alignment: Alignment.center,
               child: Column(
