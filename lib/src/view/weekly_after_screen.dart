@@ -400,7 +400,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
-          Space(width: 12),
+          Space(width: 10),
           Container(
             height: size.getSize(26.0),
             width: size.getSize(200),
@@ -511,7 +511,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                         });
                       },
                       child: ToDoCheckBtn(value: e.completed)),
-                  Space(width: 10),
+                  Space(width: 8),
                   Container(
                     height: size.getSize(26.0),
                     width: size.getSize(200),
@@ -608,7 +608,7 @@ class _AfterBoxTileState extends State<AfterBoxTile> {
       children: [
         Text(afterBox.title ?? '',
             style: rTxtStyle.copyWith(
-                color: Color(0xFFF5CE08), fontSize: size.getSize(20)))
+                color: Color(0xFFF6CE05), fontSize: size.getSize(18)))
       ],
     );
   }
@@ -623,8 +623,8 @@ class _AfterBoxTileState extends State<AfterBoxTile> {
             children: [
               Row(
                 children: [
-                  Text('-', style: rTxtStyle,),
-                  Space(width: 5),
+                  Icon(Icons.arrow_right_rounded, color: Colors.grey, size: size.getSize(16)),
+                  // Space(width: 2),
                   Text(e.content ?? '', style: rTxtStyle.copyWith(color: Colors.grey,fontSize: size.getSize(16)),)
                 ],
               )

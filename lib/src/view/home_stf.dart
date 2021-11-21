@@ -316,7 +316,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
-          Space(width: 12),
+          Space(width: 10),
           Container(
             height: size.getSize(26.0),
             width: size.getSize(200),
@@ -437,7 +437,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                         });
                       },
                       child: ToDoCheckBtn(value: e.completed)),
-                  Space(width: 10),
+                  Space(width: 8),
                   Container(
                     height: size.getSize(26.0),
                     width: size.getSize(200),
