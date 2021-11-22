@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/view/home_stf.dart';
+import 'package:handey_app/src/view/utils/custom_appbar.dart';
+import 'package:handey_app/src/view/utils/custom_drawer.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/weekly_after_screen.dart';
 
@@ -22,11 +24,8 @@ class _NavigationBarState extends State<NavigationBar> {
   Widget build(BuildContext context) {
     size = ScreenSize();
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 0.0,
-          elevation: 0.0,
-          backgroundColor: Colors.white,
-        ),
+        appBar: CustomAppBar(),
+        endDrawer: CustomDrawer(),
         body: childList[_pageIndex],
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,

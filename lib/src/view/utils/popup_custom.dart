@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
-import 'package:handey_app/src/view/utils/text_style.dart';
 
 showCustomPopUp(
     {BuildContext context, String title, String content, String confirmText}) async {

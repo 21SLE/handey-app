@@ -5,7 +5,6 @@ import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
 import 'package:handey_app/src/view/utils/calendar.dart';
-import 'package:handey_app/src/view/utils/costumed_appbar.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/business_logic/todo/todo_service.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
@@ -23,7 +22,11 @@ class HomeStateful extends StatelessWidget {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          appBar: CostumedAppBar(),
+          appBar: AppBar(
+            toolbarHeight: 0.0,
+            elevation: 0.0,
+            backgroundColor: Colors.white,
+          ),
           body: Container(
               alignment: Alignment.center,
               child: Column(
@@ -220,7 +223,6 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
 
   bool editingYn;
   int fieldCount = 0;
-  int nextIndex = 0;
 
   @override
   void initState() {
@@ -314,7 +316,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
-          Space(width: 12),
+          Space(width: 10),
           Container(
             height: size.getSize(26.0),
             width: size.getSize(200),
@@ -435,7 +437,7 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                         });
                       },
                       child: ToDoCheckBtn(value: e.completed)),
-                  Space(width: 10),
+                  Space(width: 8),
                   Container(
                     height: size.getSize(26.0),
                     width: size.getSize(200),
