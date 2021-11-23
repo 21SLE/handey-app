@@ -132,11 +132,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                               color: Colors.yellow,
                               borderRadius: BorderRadius.circular(size.getSize(20))
                           ),
-                          // selectedDecoration: BoxDecoration(
-                          //     color: Colors.grey,
-                          //     borderRadius: BorderRadius.circular(size.getSize(20))
-                          // ),
-
                         ),
                         selectedDayPredicate: (date) {
                           return isSameDay(selectedDay, date);
@@ -149,7 +144,6 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                             selectedDay = selectDay;
                             focusedDay = focusDay;
                           });
-
                           showModalBottomSheet<dynamic>(
                               context: context,
                               isScrollControlled: true,
@@ -161,6 +155,20 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 ],
                               ));
                         },
+                        calendarBuilders: CalendarBuilders(
+                          markerBuilder: (context, date, events) {
+                            if (events.isNotEmpty) {
+                              // children.add(
+                              //   Positioned(
+                              //     right: 1,
+                              //     top: 1,
+                              //     child: _buildEventsMarker(date, events),
+                              //   ),
+                              // );
+                            }
+                            return Container();
+                          }
+                        ),
                       ),
                     ),
                   ],
@@ -173,5 +181,18 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           }
         });
     
+  }
+
+  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
+    return Container(
+      width: 80.0,
+      height: 20.0,
+
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        shape:  BoxShape.rectangle ,
+        borderRadius: null,
+      ),
+    );
   }
 }
