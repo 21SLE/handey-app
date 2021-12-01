@@ -92,6 +92,19 @@ class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
   }
 }
 
+class ScheduleTile extends StatefulWidget {
+  @override
+  _ScheduleTileState createState() => _ScheduleTileState();
+}
+
+class _ScheduleTileState extends State<ScheduleTile> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+
 class HistorySection extends StatelessWidget {
   HistorySection({@required this.selectedDay});
 
