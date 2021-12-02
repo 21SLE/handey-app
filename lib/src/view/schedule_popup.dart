@@ -93,6 +93,10 @@ class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
 }
 
 class ScheduleTile extends StatefulWidget {
+  ScheduleTile({@required this.scheduleName, @required this.selectedDay});
+
+  final String scheduleName;
+  final DateTime selectedDay;
   @override
   _ScheduleTileState createState() => _ScheduleTileState();
 }
@@ -100,8 +104,16 @@ class ScheduleTile extends StatefulWidget {
 class _ScheduleTileState extends State<ScheduleTile> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: Row(
+        children: [
+          Text(widget.scheduleName)
+        ],
+      )
+    );
   }
+
+
 }
 
 
