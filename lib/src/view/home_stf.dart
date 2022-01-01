@@ -22,6 +22,7 @@ class HomeStateful extends StatelessWidget {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
+          backgroundColor: Color.fromRGBO(242, 242, 242, 1),
           appBar: AppBar(
             toolbarHeight: 0.0,
             elevation: 0.0,
@@ -133,14 +134,14 @@ class _ToDoBoxListSectionState extends State<ToDoBoxListSection> {
         height: size.getSize(64.0),
         // margin: EdgeInsets.only(bottom: size.getSize(8)),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.98),
-          borderRadius: BorderRadius.circular(size.getSize(10)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(size.getSize(8)),
           border: Border.all(color: Colors.white, width: 3.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.6),
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 6.0,
+              color: Color(0xFF979797),
+              offset: Offset(3.0, 3.0), //(x,y)
+              blurRadius: 3.0,
             ),
           ],
         ),
@@ -263,16 +264,16 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
       // height: size.getSize(120.0),
       padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5),
           size.getSize(0), size.getSize(12)),
-      margin: EdgeInsets.only(bottom: size.getSize(8)),
+      margin: EdgeInsets.only(bottom: size.getSize(12)),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.98),
-        borderRadius: BorderRadius.circular(size.getSize(10)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(size.getSize(8)),
         border: Border.all(color: Colors.white, width: 3.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
+            color: Color(0xFF979797),
+            offset: Offset(3.0, 3.0), //(x,y)
+            blurRadius: 3.0,
           ),
         ],
       ),
@@ -315,10 +316,22 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+          GestureDetector(
+            onTap: () async {
+              _toDoService.updateToDoBoxFixedYn(toDoBox.id);
+              setState(() {
+                toDoBox.fixed = !toDoBox.fixed;
+              });
+            },
+            child: Icon(
+              Icons.push_pin,
+              size: size.getSize(20),
+              color: toDoBox.fixed ? Color.fromRGBO(254, 192, 1, 1) : Color(0xFF4B4B4B))
+          ),
           Space(width: 10),
           Container(
             height: size.getSize(26.0),
+            padding: EdgeInsets.only(bottom: size.getSize(5)),
             width: size.getSize(200),
             child: Focus(
               onFocusChange: (hasFocus) {
@@ -372,12 +385,6 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                     //todoElmFNode.add(FocusNode());
                   });
                   break;
-                case '고정':
-                  _toDoService.updateToDoBoxFixedYn(toDoBoxId);
-                  setState(() {
-                    toDoBox.fixed = !toDoBox.fixed;
-                  });
-                  break;
                 default: // 편집
                   setState(() {
                     editingYn = true;
@@ -390,11 +397,6 @@ class _ToDoBoxTileState extends State<ToDoBoxTile> {
                 height: size.getSize(24),
                 child: toDoMenuItem(Icon(Icons.add, size: size.getSize(16)), '추가'),
                 value: '추가',
-              ),
-              PopupMenuItem(
-                height: size.getSize(24),
-                child: toDoMenuItem(Icon(Icons.push_pin, size: size.getSize(16)), '고정'),
-                value: '고정',
               ),
               PopupMenuItem(
                 height: size.getSize(24),

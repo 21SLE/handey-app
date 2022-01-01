@@ -11,17 +11,7 @@ class ToDoCheckBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     ScreenSize size = ScreenSize();
     return GestureDetector(
-      child: Container(
-        width: size.getSize(20.0),
-        height: size.getSize(20.0),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            width: size.getSize(5.0),
-            color: value ? Colors.yellow : Colors.grey.withOpacity(0.3)
-          ),
-        ),
-      ),
+      child: Icon(Icons.check_circle_outline_outlined,size:size.getSize(22.0), color: value ? Color(0xFFFDDC42) : Color(0xFFB6B6B6))
     );
   }
 }

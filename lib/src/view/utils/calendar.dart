@@ -88,7 +88,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                 Text(
                                   DateTime.now().year.toString(),
                                   style: TextStyle(
-                                      color: Color(0xFFFFE600),
+                                      color: Color.fromRGBO(254, 192, 1, 1),
                                       fontSize: size.getSize(34),
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -129,7 +129,11 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                         calendarStyle: CalendarStyle(
                           isTodayHighlighted: true,
                           todayDecoration: BoxDecoration(
-                              color: Colors.yellow,
+                              color: Color.fromRGBO(254, 192, 1, 1),
+                              borderRadius: BorderRadius.circular(size.getSize(20))
+                          ),
+                          selectedDecoration: BoxDecoration(
+                              color: Color(0xFFFDDC42),
                               borderRadius: BorderRadius.circular(size.getSize(20))
                           ),
                         ),
