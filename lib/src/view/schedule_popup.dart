@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:handey_app/src/business_logic/history_after/afterhst_model.dart';
-import 'package:handey_app/src/business_logic/history_after/afterhst_service.dart';
-import 'package:handey_app/src/business_logic/history_todo/todohst_model.dart';
-import 'package:handey_app/src/business_logic/history_todo/todohst_service.dart';
+import 'package:handey_app/src/business_logic/history/history_model.dart';
+import 'package:handey_app/src/business_logic/history/history_service.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
@@ -13,42 +11,67 @@ import 'package:handey_app/src/view/utils/text_style.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class ScheduleHistoryScreen extends StatefulWidget {
-  ScheduleHistoryScreen({@required this.selectedDay});
+class HistoryScreen extends StatefulWidget {
+  HistoryScreen({@required this.selectedDay});
 
   final DateTime selectedDay;
 
   @override
-  _ScheduleHistoryScreenState createState() => new _ScheduleHistoryScreenState();
+  _HistoryScreenState createState() => new _HistoryScreenState();
 }
 
-class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
-    with SingleTickerProviderStateMixin {
+class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
   ScreenSize size;
+  int userId;
   TabController _tabController;
 
   DateTime _selectedDay;
+  String selectedDayString;
+
+  HistoryBoxModel historyBox;
+  Future<HistoryBoxModel> futureHistoryBox;
+
+  _fetchData() {
+    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
+    selectedDayString = DateFormat("yyyy-MM-dd").format( _selectedDay);
+    futureHistoryBox = getHistoryBox(userId, selectedDayString);
+  }
 
   @override
   void initState() {
     super.initState();
     _tabController = new TabController(length: 2, vsync: this);
     _selectedDay = widget.selectedDay;
+    _fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
     size = ScreenSize();
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.58,
-      child: Column(
-        children: [
-          tabMenu(),
-          tabBody(_selectedDay),
-        ],
-      ),
-    );
+    return FutureBuilder(
+        future: futureHistoryBox,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasError) {
+            handleException(context, snapshot.error);
+          }
+          if (snapshot.hasData) {
+            historyBox = snapshot.data;
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.58,
+              child: Column(
+                children: [
+                  tabMenu(),
+                  tabBody(_selectedDay),
+                ],
+              ),
+            );
+          } else {
+            return Container(
+                height: size.getSize(300),
+                child: Center(child: CircularProgressIndicator()));
+          }
+        });
   }
 
   Widget tabMenu() {
@@ -61,10 +84,10 @@ class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
         unselectedLabelColor: Colors.grey,
         tabs: [
           Tab(
-            child: Text('일정'),
+            child: Text('ToDo'),
           ),
           Tab(
-            child: Text('History'),
+            child: Text('Finished Weekly'),
           ),
         ],
       ),
@@ -73,12 +96,11 @@ class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
 
   Widget tabBody(DateTime selectedDay) {
     return Expanded(
-      // height: MediaQuery.of(context).size.height * 0.58 - size.getSize(100),
       child: TabBarView(
         controller: _tabController,
         children: [
-          scheduleSection(selectedDay),
-          HistorySection(selectedDay: selectedDay)
+          HistoryToDoSection(toDoBoxHstList: historyBox.toDoBoxHstList),
+          HistoryFwSection(fwBoxHstList: historyBox.fwBoxHstList,)
         ],
       ),
     );
@@ -92,56 +114,11 @@ class _ScheduleHistoryScreenState extends State<ScheduleHistoryScreen>
   }
 }
 
-class ScheduleTile extends StatefulWidget {
-  ScheduleTile({@required this.scheduleName, @required this.selectedDay});
-
-  final String scheduleName;
-  final DateTime selectedDay;
-  @override
-  _ScheduleTileState createState() => _ScheduleTileState();
-}
-
-class _ScheduleTileState extends State<ScheduleTile> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Text(widget.scheduleName)
-        ],
-      )
-    );
-  }
-
-
-}
-
-
-class HistorySection extends StatelessWidget {
-  HistorySection({@required this.selectedDay});
-
-  final DateTime selectedDay;
-
-  @override
-  Widget build(BuildContext context) {
-    ScreenSize size = ScreenSize();
-    return Container(
-      padding: EdgeInsets.all(size.getSize(20)),
-      child: Column(
-        children: [
-          HistoryToDoSection(selectedDay: selectedDay),
-          HistoryAfterSection(selectedDay: selectedDay)
-        ],
-      ),
-    );
-  }
-}
-
 
 class HistoryToDoSection extends StatefulWidget {
-  HistoryToDoSection({@required this.selectedDay});
+  HistoryToDoSection({@required this.toDoBoxHstList});
 
-  final DateTime selectedDay;
+  final List<ToDoBoxHstModel> toDoBoxHstList;
 
   @override
   _HistoryToDoSectionState createState() => _HistoryToDoSectionState();
@@ -151,23 +128,16 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
   ScreenSize size;
   int userId;
 
-  List<ToDoHistoryModel> toDoHistoryList;
-  Future<List<ToDoHistoryModel>> futureToDoHistoryList;
+  List<ToDoBoxHstModel> toDoHistoryList;
 
   String selectedDayString;
 
   ScrollController _toDoHistoryScrollController = ScrollController();
 
-  _fetchData() {
-    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
-    selectedDayString = DateFormat("yyyy-MM-dd").format(widget.selectedDay);
-    futureToDoHistoryList = getToDoHistoryList(userId, selectedDayString);
-  }
-
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    toDoHistoryList = widget.toDoBoxHstList;
   }
 
   @override
@@ -180,40 +150,14 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
   Widget build(BuildContext context) {
     size = ScreenSize();
 
-    return FutureBuilder(
-        future: futureToDoHistoryList,
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasError) {
-            handleException(context, snapshot.error);
-          }
-          if (snapshot.hasData) {
-            toDoHistoryList = snapshot.data;
-            return historyToDoSection(toDoHistoryList);
-          } else {
-            return Container(
-                height: size.getSize(300),
-                child: Center(child: CircularProgressIndicator()));
-          }
-        });
+    return historyToDoSection(toDoHistoryList);
   }
 
-  Widget historyToDoSection(List<ToDoHistoryModel> toDoHistoryList) {
+  Widget historyToDoSection(List<ToDoBoxHstModel> toDoHistoryList) {
     return Container(
       height: size.getSize(230),
-      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(8), size.getSize(0), size.getSize(8)),
       margin: EdgeInsets.only(bottom: size.getSize(8)),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.98),
-        borderRadius: BorderRadius.circular(size.getSize(10)),
-        border: Border.all(color: Colors.white, width: 3.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-      ),
+
       child: SingleChildScrollView(
           controller: _toDoHistoryScrollController,
           child: ListView.separated(
@@ -231,8 +175,22 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
     );
   }
 
-  Widget toDoBox(ToDoHistoryModel toDoHistoryBox) {
+  Widget toDoBox(ToDoBoxHstModel toDoHistoryBox) {
     return Container(
+
+      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(8), size.getSize(0), size.getSize(8)),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.98),
+        borderRadius: BorderRadius.circular(size.getSize(5)),
+        border: Border.all(color: Colors.white, width: 3.0),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x979797),
+            offset: Offset(2.0, 2.0), //(x,y)
+            blurRadius: 2.0,
+          ),
+        ],
+      ),
       child: Column(
         children: [
           toDoTitle(toDoHistoryBox.title),
@@ -257,7 +215,7 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
     );
   }
   
-  Widget toDoElm(ToDoElmHistoryModel e) {
+  Widget toDoElm(ToDoElmHstModel e) {
     return Padding(
       padding: EdgeInsets.only(top: size.getSize(2), bottom: size.getSize(2)),
       child: Row(
@@ -271,69 +229,46 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
   }
 }
 
-class HistoryAfterSection extends StatefulWidget {
-  HistoryAfterSection({@required this.selectedDay});
+class HistoryFwSection extends StatefulWidget {
+  HistoryFwSection({@required this.fwBoxHstList});
 
-  final DateTime selectedDay;
+  final List<FwBoxHstModel> fwBoxHstList;
 
   @override
-  _HistoryAfterSectionState createState() => _HistoryAfterSectionState();
+  _HistoryFwSectionState createState() => _HistoryFwSectionState();
 }
 
-class _HistoryAfterSectionState extends State<HistoryAfterSection> {
+class _HistoryFwSectionState extends State<HistoryFwSection> {
   ScreenSize size;
   int userId;
 
-  List<AfterHistoryModel> afterHistoryList;
-  Future<List<AfterHistoryModel>> futureAfterHistoryList;
+  List<FwBoxHstModel> fwBoxHstList;
 
   String selectedDayString;
 
-  ScrollController _afterHistoryScrollController = ScrollController();
-
-  _fetchData() {
-    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
-    selectedDayString = DateFormat("yyyy-MM-dd").format(widget.selectedDay);
-    futureAfterHistoryList = getAfterHistoryList(userId, selectedDayString);
-  }
+  ScrollController _fwHistoryScrollController = ScrollController();
 
   @override
   void initState() {
+    fwBoxHstList = widget.fwBoxHstList;
     super.initState();
-    _fetchData();
   }
 
   @override
   void dispose() {
-    _afterHistoryScrollController.dispose();
+    ScrollController _fwHistoryScrollController = ScrollController();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     size = ScreenSize();
-    return Expanded(
-      child: FutureBuilder(
-          future: futureAfterHistoryList,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.hasError) {
-              handleException(context, snapshot.error);
-            }
-            if (snapshot.hasData) {
-              afterHistoryList = snapshot.data;
-              return historyAfterSection(afterHistoryList);
-            } else {
-              return Container(
-                  height: size.getSize(300),
-                  child: Center(child: CircularProgressIndicator()));
-            }
-          })
-    );
+    return historyFwSection(fwBoxHstList);
   }
 
-  Widget historyAfterSection(List<AfterHistoryModel> afterHistoryList) {
+  Widget historyFwSection(List<FwBoxHstModel> fwHistoryList) {
     return Container(
-      alignment: Alignment.center,
+      alignment: Alignment.topCenter,
       padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(0), size.getSize(12)),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.98),
@@ -348,14 +283,14 @@ class _HistoryAfterSectionState extends State<HistoryAfterSection> {
         ],
       ),
       child: SingleChildScrollView(
-          controller: _afterHistoryScrollController,
+          controller: _fwHistoryScrollController,
           child: ListView.separated(
               padding: EdgeInsets.all(0.0),
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: afterHistoryList.length,
+              itemCount: fwBoxHstList.length,
               itemBuilder: (context, index) {
-                return afterElement(afterHistoryList[index], afterHistoryList[index].subtitle);
+                return fwBox(fwBoxHstList[index]);
               },
               separatorBuilder: (context, index) {
                 return Space(height: 8);
@@ -364,35 +299,42 @@ class _HistoryAfterSectionState extends State<HistoryAfterSection> {
     );
   }
 
-  Widget afterElement(AfterHistoryModel afterHistory, bool subtitleYn) {
-    return subtitleYn
-        ? Container(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                    height: size.getSize(22),
-                    width: size.getSize(8),
-                    color: Colors.yellow),
-                Space(width: 12),
-                Text(afterHistory.content ?? '', style: rTxtStyle)
-              ],
-            ),
-          )
-        : Padding(
-            padding:
-                EdgeInsets.only(top: size.getSize(2), bottom: size.getSize(2)),
-            child: Row(
-              children: [
-                ToDoCheckBtn(value: true),
-                Space(width: 10),
-                Text(
-                  afterHistory.content ?? '',
-                  style: rTxtStyle,
-                )
-              ],
-            ),
-          );
+  Widget fwBox(FwBoxHstModel fwHistoryBox) {
+    return Container(
+      child: Column(
+        children: [
+          fwTitle(fwHistoryBox.title),
+          Space(height: 10),
+          Column(children: fwHistoryBox.fwElmList.map((e) => fwElm(e)).toList()),
+        ],
+      ),
+    );
+  }
+
+  Widget fwTitle(String title) {
+    return Container(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+          Space(width: 12),
+          Text(title ?? '', style: rTxtStyle)
+        ],
+      ),
+    );
+  }
+
+  Widget fwElm(FwElmHstModel e) {
+    return Padding(
+      padding: EdgeInsets.only(top: size.getSize(2), bottom: size.getSize(2)),
+      child: Row(
+        children: [
+          ToDoCheckBtn(value: true),
+          Space(width: 10),
+          Text(e.content ?? '', style: rTxtStyle,)
+        ],
+      ),
+    );
   }
 }

@@ -151,7 +151,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                                   borderRadius: BorderRadius.only(topLeft: Radius.circular(size.getSize(24)), topRight: Radius.circular(size.getSize(24)))),
                               builder: (context) => Wrap(
                                 children: [
-                                  ScheduleHistoryScreen(selectedDay: selectedDay),
+                                  HistoryScreen(selectedDay: selectedDay),
                                 ],
                               ));
                         },
@@ -181,18 +181,5 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           }
         });
     
-  }
-
-  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
-    return Container(
-      width: 80.0,
-      height: 20.0,
-
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        shape:  BoxShape.rectangle ,
-        borderRadius: null,
-      ),
-    );
   }
 }
