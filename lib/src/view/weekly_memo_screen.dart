@@ -151,7 +151,7 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
             fwBoxList = snapshot.data;
 
             return Container(
-                height: size.getSize(150.0),
+                height: size.getSize(130.0),
                 child: Column(
                   children: [
                     sectionTitle(false),
@@ -221,7 +221,7 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
             child: WeeklyBoxTile(
                 weeklyBox: weeklyBoxList[index],
                 weeklyElmList: weeklyBoxList[index].weeklyElmList,
-                addAfterElm: addAfterElm),
+                onCompleteWeeklyElm: onCompleteWeeklyElm),
               onDismissed: (direction) {
                 // 해당 index의 item을 리스트에서 삭제
                 deleteWeeklyBox(userId, weeklyBoxList[index].id);
@@ -266,33 +266,21 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   }
 
 
-  addAfterElm(WeeklyBoxModel newAfterBox, WeeklyElmModel newAfterElm) {
-    // bool isThereAfterBoxAlready = false;
-    // afterBoxList.forEach((afterBox) {
-    //   if(afterBox.id == newAfterBox.id) {
-    //     isThereAfterBoxAlready = true;
-    //     setState(() {
-    //       afterBox.weeklyElmList.add(newAfterElm);
-    //     });
-    //   }
-    // });
-    // if(isThereAfterBoxAlready == false) {
-    //   WeeklyBoxModel afterBox = new WeeklyBoxModel();
-    //   afterBox.id = newAfterBox.id;
-    //   afterBox.title = newAfterBox.title;
-    //   afterBox.weeklyElmList = new List<WeeklyElmModel>.empty(growable: true);
-    //   afterBox.weeklyElmList.add(newAfterElm);
-    //   afterBoxList.add(afterBox);
-    // }
+  onCompleteWeeklyElm(WeeklyBoxModel weeklyBox, WeeklyElmModel weeklyElm) {
+    if(weeklyElm.completed) {
+      restoreFwElmToWeekly(userId, weeklyBox.id, weeklyElm.id);
+    } else {
+      addFwElm(userId, weeklyElm.id);
+    }
   }
 }
 
 class WeeklyBoxTile extends StatefulWidget {
-  WeeklyBoxTile({@required this.weeklyBox, @required this.weeklyElmList, @required this.addAfterElm});
+  WeeklyBoxTile({@required this.weeklyBox, @required this.weeklyElmList, @required this.onCompleteWeeklyElm});
 
   final WeeklyBoxModel weeklyBox;
   final List<WeeklyElmModel> weeklyElmList;
-  final Function(WeeklyBoxModel, WeeklyElmModel) addAfterElm;
+  final Function(WeeklyBoxModel, WeeklyElmModel) onCompleteWeeklyElm;
 
   @override
   _WeeklyBoxTileState createState() => _WeeklyBoxTileState();
@@ -398,6 +386,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                 if(!hasFocus) {
                   weeklyBox.title = titleTEC.text;
                   updateWeeklyBoxTitle(weeklyBox.id, titleTEC.text);
+                  updateFwBoxTitle(weeklyBox.id, titleTEC.text);
                 }
               },
               child: TextFormField(
@@ -493,7 +482,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                   GestureDetector(
                       onTap: () async {
                         updateWeeklyElmCompleted(e.id);
-                        widget.addAfterElm(weeklyBox, e);
+                        widget.onCompleteWeeklyElm(weeklyBox, e);
 
                         setState(() {
                           e.completed = !e.completed;
@@ -509,6 +498,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                         if (!hasFocus) {
                           weeklyElmList[index].content = weeklyElmTEC[index].text;
                           updateWeeklyElmContent(e.id, weeklyElmTEC[index].text);
+                          updateFwElmContent(weeklyBox.id, e.id, weeklyElmTEC[index].text);
                         }
                       },
                       child: TextFormField(

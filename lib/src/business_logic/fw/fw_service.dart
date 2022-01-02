@@ -16,3 +16,49 @@ Future<List<FwBoxModel>> getFwBoxList(int userId, String searchDt) async {
     return [];
   }
 }
+
+/// weekly -> fw
+Future<bool> addFwElm(int userId, int weeklyElmId) async {
+  // /user/{userId}/fwelm/{weeklyElmId}
+  Map<String, dynamic> data =
+  await _httpClient.postRequest('/user/$userId/fwelm/$weeklyElmId', {},tokenYn: true);
+
+  if(data['data']){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/// fw -> weekly
+Future<bool> restoreFwElmToWeekly(int userId, int weeklyBoxId, int weeklyElmId) async {
+  // /user/{userId}/fwbox/{weeklyBoxId}/fwelm/{weeklyElmId}
+  Map<String, dynamic> data =
+  await _httpClient.putRequest('/user/$userId/fwbox/$weeklyBoxId/fwelm/$weeklyElmId', {},tokenYn: true);
+
+  if(data['data']){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/// fw 타이틀 수정
+Future<bool> updateFwBoxTitle(int weeklyBoxId, String title) async {
+  // /user/fwbox/{weeklyBoxId}
+  Map<String, dynamic> data =
+  await _httpClient.putRequest('/user/fwbox/$weeklyBoxId', {'title': title}, tokenYn: true);
+
+  // 요청 성공여부 return
+  return data['success'];
+}
+
+/// fw elm 내용 수정
+Future<bool> updateFwElmContent(int weeklyBoxId, int weeklyElmId, String content) async {
+  // /user/fwbox/{weeklyBoxId}/fwelm/{weeklyElmId}
+  Map<String, dynamic> data =
+  await _httpClient.putRequest('/user/fwbox/$weeklyBoxId/fwelm/$weeklyElmId', {'content': content}, tokenYn: true);
+
+  // 요청 성공여부 return
+  return data['success'];
+}
