@@ -4,7 +4,7 @@ import 'package:handey_app/src/view/home_stf.dart';
 import 'package:handey_app/src/view/utils/custom_appbar.dart';
 import 'package:handey_app/src/view/utils/custom_drawer.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
-import 'package:handey_app/src/view/weekly_after_screen.dart';
+import 'package:handey_app/src/view/weekly_memo_screen.dart';
 
 class NavigationBar extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class _NavigationBarState extends State<NavigationBar> {
 
   var childList = [
     HomeStateful(),
-    WeeklyAfterScreen()
+    WeeklyMemoScreen()
   ];
 
   @override
