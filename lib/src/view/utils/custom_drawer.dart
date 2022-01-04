@@ -24,7 +24,7 @@ class CustomDrawer extends StatelessWidget {
                 'HANDEY',
                 style: rTxtStyle.copyWith(
                   fontSize: size.getSize(30),
-                  color: Colors.yellow,
+                  color: Color.fromRGBO(254, 192, 1, 1),
                   fontWeight: FontWeight.bold
                 )
               ),
