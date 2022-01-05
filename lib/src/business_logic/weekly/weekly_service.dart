@@ -33,7 +33,7 @@ Future<int> createWeeklyBoxObj(int userId) async {
 /// weeklybox 삭제
 Future<bool> deleteWeeklyBox(int userId, int weeklyBoxId) async {
   Map<String, dynamic> data =
-  await _httpClient.deleteRequest('/weeklyBox/$weeklyBoxId', tokenYn: true);
+  await _httpClient.deleteRequest('/user/weeklyBox/$weeklyBoxId', tokenYn: true);
 
   // 요청 성공여부 return
   return data['success'];
@@ -42,7 +42,7 @@ Future<bool> deleteWeeklyBox(int userId, int weeklyBoxId) async {
 /// weeklybox title 수정
 Future<bool> updateWeeklyBoxTitle(int weeklyBoxId, String title) async {
   Map<String, dynamic> data =
-  await _httpClient.putRequest('/weeklyBox/$weeklyBoxId', {'title': title},tokenYn: true);
+  await _httpClient.putRequest('/user/weeklyBox/$weeklyBoxId', {'title': title},tokenYn: true);
 
   // 요청 성공여부 return
   return data['success'];
@@ -51,7 +51,7 @@ Future<bool> updateWeeklyBoxTitle(int weeklyBoxId, String title) async {
 /// weeklyelm 객체 생성
 Future<int> createWeeklyElmObj(int weeklyBoxId) async {
   Map<String, dynamic> data =
-  await _httpClient.postRequest('/weeklyBox/$weeklyBoxId', {},tokenYn: true);
+  await _httpClient.postRequest('/user/weeklyBox/$weeklyBoxId', {},tokenYn: true);
 
   //toDoElmId return
   if(data['success']){
@@ -64,25 +64,25 @@ Future<int> createWeeklyElmObj(int weeklyBoxId) async {
 /// todoelm 내용 수정
 Future<bool> updateWeeklyElmContent(int weeklyElmId, String content) async {
   Map<String, dynamic> data =
-  await _httpClient.putRequest('/weeklyElm/$weeklyElmId', {'content': content}, tokenYn: true);
+  await _httpClient.putRequest('/user/weeklyElm/$weeklyElmId', {'content': content}, tokenYn: true);
 
   // 요청 성공여부 return
   return data['success'];
 }
 
-/// todoelm 삭제
+/// weeklyelm 삭제
 Future<bool> deleteWeeklyElm(int weeklyElmId) async {
   Map<String, dynamic> data =
-  await _httpClient.deleteRequest('/weeklyElm/$weeklyElmId', tokenYn: true);
+  await _httpClient.deleteRequest('/user/weeklyElm/$weeklyElmId', tokenYn: true);
 
   // 요청 성공여부 return
   return data['success'];
 }
 
-/// todoelm complete 여부 수정
+/// weeklyelm complete 여부 수정
 Future<bool> updateWeeklyElmCompleted(int weeklyElmId) async {
   Map<String, dynamic> data =
-  await _httpClient.patchRequest('/weeklyElm/$weeklyElmId', tokenYn: true);
+  await _httpClient.patchRequest('/user/weeklyElm/$weeklyElmId', tokenYn: true);
 
   // todobox 타이틀 유무 상태 return
   if(data['success']){

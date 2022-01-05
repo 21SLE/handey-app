@@ -23,7 +23,7 @@ Future<bool> addFwElm(int userId, int weeklyElmId) async {
   Map<String, dynamic> data =
   await _httpClient.postRequest('/user/$userId/fwelm/$weeklyElmId', {},tokenYn: true);
 
-  if(data['data']){
+  if(data['success']){
     return true;
   } else {
     return false;
@@ -36,7 +36,7 @@ Future<bool> restoreFwElmToWeekly(int userId, int weeklyBoxId, int weeklyElmId) 
   Map<String, dynamic> data =
   await _httpClient.putRequest('/user/$userId/fwbox/$weeklyBoxId/fwelm/$weeklyElmId', {},tokenYn: true);
 
-  if(data['data']){
+  if(data['success']){
     return true;
   } else {
     return false;
