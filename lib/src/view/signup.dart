@@ -84,8 +84,6 @@ class _SignUpState extends State<SignUp> {
                   emailTextFormField(),
                   Space(width: 10),
                   emailDuplicationCheckBtn(),
-                  Space(width: 10),
-                  emailSendBtn()
                 ],
               ),
               Space(height: 12),
@@ -167,23 +165,6 @@ class _SignUpState extends State<SignUp> {
             borderRadius: BorderRadius.circular(size.getSize(6.0))),
         child: Text(
             '중복확인'
-        ),
-      ),
-    );
-  }
-
-  Widget emailSendBtn() {
-    return GestureDetector(
-      onTap:() {},
-      child: Container(
-        width: size.getSize(70.0),
-        height: size.getSize(40.0),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.yellow, width: 2.0),
-            borderRadius: BorderRadius.circular(size.getSize(6.0))),
-        child: Text(
-            '메일인증'
         ),
       ),
     );

@@ -54,6 +54,8 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -78,5 +80,14 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+  fonts:
+    - family: AppleSDGothicNeo
+      fonts:
+        - asset: assets/fonts/AppleSDGothicNeoT.ttf
+          weight: 100
+        - asset: assets/fonts/AppleSDGothicNeoR.ttf
+        - asset: assets/fonts/AppleSDGothicNeoB.ttf
+          weight: 700
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
