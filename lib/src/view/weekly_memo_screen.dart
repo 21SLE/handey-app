@@ -24,6 +24,7 @@ class WeeklyMemoScreen extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        backgroundColor: Color.fromRGBO(242, 242, 242, 1),
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           toolbarHeight: 0.0,
@@ -74,7 +75,10 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
+    futureWeeklyBoxList = getWeeklyBoxList(userId);
+    futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+    // _fetchData();
   }
 
   @override
@@ -266,11 +270,17 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   }
 
 
-  onCompleteWeeklyElm(WeeklyBoxModel weeklyBox, WeeklyElmModel weeklyElm) {
+  onCompleteWeeklyElm(WeeklyBoxModel weeklyBox, WeeklyElmModel weeklyElm) async {
     if(weeklyElm.completed) {
-      restoreFwElmToWeekly(userId, weeklyBox.id, weeklyElm.id);
+      await restoreFwElmToWeekly(userId, weeklyBox.id, weeklyElm.id);
+      setState(() {
+        futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+      });
     } else {
-      addFwElm(userId, weeklyElm.id);
+      await addFwElm(userId, weeklyElm.id);
+      setState(() {
+        futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+      });
     }
   }
 }
@@ -660,7 +670,7 @@ class _MemoSectionState extends State<MemoSection> {
                 width: size.getSize(350),
                 height: size.getSize(120),
                 margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
-                padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(0), size.getSize(12)),
+                padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(12), size.getSize(12)),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(size.getSize(8)),
@@ -675,7 +685,14 @@ class _MemoSectionState extends State<MemoSection> {
                 ),
                 child: SingleChildScrollView(
                     controller: _scrollController,
-                    child: memoTextFormField()
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        sectionTitle(),
+                        Divider(thickness: 2),
+                        memoTextFormField(),
+                      ],
+                    )
                 )
             );
           } else {
@@ -684,6 +701,15 @@ class _MemoSectionState extends State<MemoSection> {
                 child: Center(child: CircularProgressIndicator()));
           }
         });
+  }
+
+  Widget sectionTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Memo', style: rTxtStyle.copyWith(fontSize: size.getSize(20), fontWeight: FontWeight.bold)),
+      ],
+    );
   }
 
   Widget memoTextFormField() {
@@ -706,8 +732,8 @@ class _MemoSectionState extends State<MemoSection> {
         style: rTxtStyle,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(
-            horizontal: size.getSize(10.0),
-            vertical: size.getSize(15.0),
+            horizontal: size.getSize(3.0),
+            vertical: size.getSize(0.0),
           ),
           counterText: "",
           border: InputBorder.none,

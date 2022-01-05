@@ -71,6 +71,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(size.getSize(10)),
+                  color: Color.fromRGBO(242, 242, 242, 1),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
