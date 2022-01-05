@@ -78,7 +78,6 @@ class _LoginState extends State<Login> {
   Widget loginForm() {
     return Padding(
       padding: EdgeInsets.all(size.getSize(50)),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -152,6 +151,9 @@ class _LoginState extends State<Login> {
         textAlign: TextAlign.left,
         minLines: 1,
         style: rTxtStyle,
+        obscureText: true,
+        enableSuggestions: false,
+        autocorrect: false,
         decoration: InputDecoration(
           hintText: '비밀번호를 입력하세요.',
           hintStyle: TextStyle(
