@@ -50,7 +50,11 @@ Future<bool> updateFwBoxTitle(int weeklyBoxId, String title) async {
   await _httpClient.putRequest('/user/fwbox/$weeklyBoxId', {'title': title}, tokenYn: true);
 
   // 요청 성공여부 return
-  return data['success'];
+  if(data['success']){
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /// fw elm 내용 수정
@@ -60,5 +64,9 @@ Future<bool> updateFwElmContent(int weeklyBoxId, int weeklyElmId, String content
   await _httpClient.putRequest('/user/fwbox/$weeklyBoxId/fwelm/$weeklyElmId', {'content': content}, tokenYn: true);
 
   // 요청 성공여부 return
-  return data['success'];
+  if(data['success']){
+    return true;
+  } else {
+    return false;
+  }
 }
