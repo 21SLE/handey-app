@@ -4,6 +4,7 @@ import 'package:handey_app/src/business_logic/history/history_model.dart';
 import 'package:handey_app/src/business_logic/history/history_service.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
@@ -79,7 +80,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
       height: size.getSize(60),
       child: TabBar(
         controller: _tabController,
-        indicatorColor: Colors.yellow,
+        indicatorColor: regularYellow,
         labelColor: Colors.black,
         unselectedLabelColor: Colors.grey,
         tabs: [
@@ -157,10 +158,10 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
     return Container(
       height: size.getSize(230),
       margin: EdgeInsets.only(bottom: size.getSize(8)),
-
+      padding: EdgeInsets.only(top: size.getSize(10), left: size.getSize(15), right: size.getSize(15)),
       child: SingleChildScrollView(
           controller: _toDoHistoryScrollController,
-          child: ListView.separated(
+          child: ListView.builder(
               padding: EdgeInsets.all(0.0),
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
@@ -168,16 +169,18 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
               itemBuilder: (context, index) {
                 return toDoBox(toDoHistoryList[index]);
               },
-              separatorBuilder: (context, index) {
-                return Divider(thickness: 1.0);
-              })
+              // separatorBuilder: (context, index) {
+              //   return Divider(thickness: 1.0);
+              // }
+      )
       ),
     );
   }
 
   Widget toDoBox(ToDoBoxHstModel toDoHistoryBox) {
     return Container(
-
+      width: size.getSize(350.0),
+      margin: EdgeInsets.fromLTRB(size.getSize(5),size.getSize(8),size.getSize(5),size.getSize(8)),
       padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(8), size.getSize(0), size.getSize(8)),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.98),
@@ -185,9 +188,9 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
         border: Border.all(color: Colors.white, width: 3.0),
         boxShadow: [
           BoxShadow(
-            color: Color(0x979797),
+            color: Color(0xFF979797),
             offset: Offset(2.0, 2.0), //(x,y)
-            blurRadius: 2.0,
+            blurRadius: 3.0,
           ),
         ],
       ),
@@ -207,7 +210,7 @@ class _HistoryToDoSectionState extends State<HistoryToDoSection> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+          Container(height: size.getSize(21), width: size.getSize(6), color: cheeseYellow),
           Space(width: 12),
           Text(title ?? '', style: rTxtStyle)
         ],
@@ -246,8 +249,6 @@ class _HistoryFwSectionState extends State<HistoryFwSection> {
 
   String selectedDayString;
 
-  ScrollController _fwHistoryScrollController = ScrollController();
-
   @override
   void initState() {
     fwBoxHstList = widget.fwBoxHstList;
@@ -256,7 +257,6 @@ class _HistoryFwSectionState extends State<HistoryFwSection> {
 
   @override
   void dispose() {
-    ScrollController _fwHistoryScrollController = ScrollController();
     super.dispose();
   }
 
@@ -269,22 +269,9 @@ class _HistoryFwSectionState extends State<HistoryFwSection> {
   Widget historyFwSection(List<FwBoxHstModel> fwHistoryList) {
     return Container(
       alignment: Alignment.topCenter,
-      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(0), size.getSize(12)),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.98),
-        borderRadius: BorderRadius.circular(size.getSize(10)),
-        border: Border.all(color: Colors.white, width: 3.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.6),
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-      ),
+        padding: EdgeInsets.only(top: size.getSize(10), left: size.getSize(15), right: size.getSize(15)),
       child: SingleChildScrollView(
-          controller: _fwHistoryScrollController,
-          child: ListView.separated(
+          child: ListView.builder(
               padding: EdgeInsets.all(0.0),
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
@@ -292,15 +279,31 @@ class _HistoryFwSectionState extends State<HistoryFwSection> {
               itemBuilder: (context, index) {
                 return fwBox(fwBoxHstList[index]);
               },
-              separatorBuilder: (context, index) {
-                return Space(height: 8);
-              })
+              // separatorBuilder: (context, index) {
+              //   return Space(height: 8);
+              // }
+          )
       )
     );
   }
 
   Widget fwBox(FwBoxHstModel fwHistoryBox) {
     return Container(
+      width: size.getSize(350.0),
+      margin: EdgeInsets.fromLTRB(size.getSize(5),size.getSize(8),size.getSize(5),size.getSize(8)),
+      padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(8), size.getSize(0), size.getSize(8)),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.98),
+        borderRadius: BorderRadius.circular(size.getSize(5)),
+        border: Border.all(color: Colors.white, width: 3.0),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF979797),
+            offset: Offset(2.0, 2.0), //(x,y)
+            blurRadius: 3.0,
+          ),
+        ],
+      ),
       child: Column(
         children: [
           fwTitle(fwHistoryBox.title),
@@ -317,7 +320,7 @@ class _HistoryFwSectionState extends State<HistoryFwSection> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(height: size.getSize(22), width: size.getSize(8), color: Colors.yellow),
+          Container(height: size.getSize(21), width: size.getSize(6), color: cheeseYellow),
           Space(width: 12),
           Text(title ?? '', style: rTxtStyle)
         ],

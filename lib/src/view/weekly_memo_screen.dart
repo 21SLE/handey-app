@@ -9,6 +9,7 @@ import 'package:handey_app/src/business_logic/weekly/weekly_model.dart';
 import 'package:handey_app/src/business_logic/weekly/weekly_service.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
@@ -388,7 +389,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(height: size.getSize(21), width: size.getSize(6), color: Color.fromRGBO(254, 192, 1, 1)),
+          Container(height: size.getSize(21), width: size.getSize(6), color: cheeseYellow),
           Space(width: 10),
           Container(
             height: size.getSize(26.0),

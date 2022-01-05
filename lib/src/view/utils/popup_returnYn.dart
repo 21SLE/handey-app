@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
@@ -69,7 +70,7 @@ showCustomPopUpYn(
                             height: size.getSize(54),
                             color: Colors.transparent,
                             alignment: Alignment.center,
-                            child: Text(confirmText, style: rTxtStyle.copyWith(color: Colors.yellow))
+                            child: Text(confirmText, style: rTxtStyle.copyWith(color: regularYellow))
                           ),
                         ),
                       ),

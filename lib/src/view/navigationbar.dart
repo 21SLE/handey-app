@@ -47,7 +47,7 @@ class _NavigationBarState extends State<NavigationBar> {
                 label: 'home'),
             BottomNavigationBarItem(
                 icon: _pageIndex == 1 ? Icon(Icons.account_balance_wallet) : Icon(Icons.account_balance_wallet_outlined),
-                label: 'weekly/after'),
+                label: 'weekly/memo'),
           ],
         )
     );
