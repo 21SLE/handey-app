@@ -63,14 +63,7 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   Future<List<WeeklyBoxModel>> futureWeeklyBoxList;
   Future<List<FwBoxModel>> futureFwBoxList;
 
-
   int fieldCount = 0;
-
-  _fetchData() {
-    userId = Provider.of<UserProvider>(context, listen: false).user.userId;
-    futureWeeklyBoxList = getWeeklyBoxList(userId);
-    futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
-  }
 
   @override
   void initState() {
@@ -78,7 +71,6 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
     userId = Provider.of<UserProvider>(context, listen: false).user.userId;
     futureWeeklyBoxList = getWeeklyBoxList(userId);
     futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
-    // _fetchData();
   }
 
   @override
@@ -175,7 +167,6 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
                 child: Center(child: CircularProgressIndicator()));
           }
         });
-
   }
 
   Widget sectionTitle(bool weeklySectionTitle) {
@@ -225,7 +216,9 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
             child: WeeklyBoxTile(
                 weeklyBox: weeklyBoxList[index],
                 weeklyElmList: weeklyBoxList[index].weeklyElmList,
-                onCompleteWeeklyElm: onCompleteWeeklyElm),
+                onCompleteWeeklyElm: onCompleteWeeklyElm,
+                onUpdateWeeklyTitle: onUpdateWeeklyTitle,
+                onUpdateWeeklyContent: onUpdateWeeklyContent),
               onDismissed: (direction) {
                 // 해당 index의 item을 리스트에서 삭제
                 deleteWeeklyBox(userId, weeklyBoxList[index].id);
@@ -269,7 +262,6 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
     );
   }
 
-
   onCompleteWeeklyElm(WeeklyBoxModel weeklyBox, WeeklyElmModel weeklyElm) async {
     if(weeklyElm.completed) {
       await restoreFwElmToWeekly(userId, weeklyBox.id, weeklyElm.id);
@@ -283,14 +275,32 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
       });
     }
   }
+
+  onUpdateWeeklyTitle(WeeklyBoxModel weeklyBox, String newTitle) async {
+    // await updateWeeklyBoxTitle(weeklyBox.id, newTitle);
+    await updateFwBoxTitle(weeklyBox.id, newTitle);
+    setState(() {
+      futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+    });
+  }
+
+  onUpdateWeeklyContent(WeeklyBoxModel weeklyBox, WeeklyElmModel weeklyElm, String newContent) async {
+    await updateWeeklyElmContent(weeklyElm.id, newContent);
+    await updateFwElmContent(weeklyBox.id, weeklyElm.id, newContent);
+    setState(() {
+      futureFwBoxList = getFwBoxList(userId, DateFormat("yyyy-MM-dd").format(DateTime.now()));
+    });
+  }
 }
 
 class WeeklyBoxTile extends StatefulWidget {
-  WeeklyBoxTile({@required this.weeklyBox, @required this.weeklyElmList, @required this.onCompleteWeeklyElm});
+  WeeklyBoxTile({@required this.weeklyBox, @required this.weeklyElmList, @required this.onCompleteWeeklyElm, @required this.onUpdateWeeklyTitle, @required this.onUpdateWeeklyContent});
 
   final WeeklyBoxModel weeklyBox;
   final List<WeeklyElmModel> weeklyElmList;
   final Function(WeeklyBoxModel, WeeklyElmModel) onCompleteWeeklyElm;
+  final Function(WeeklyBoxModel, String) onUpdateWeeklyTitle;
+  final Function(WeeklyBoxModel, WeeklyElmModel, String) onUpdateWeeklyContent;
 
   @override
   _WeeklyBoxTileState createState() => _WeeklyBoxTileState();
@@ -392,11 +402,15 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
             height: size.getSize(26.0),
             width: size.getSize(200),
             child: Focus(
-              onFocusChange: (hasFocus) {
+              onFocusChange: (hasFocus) async {
                 if(!hasFocus) {
                   weeklyBox.title = titleTEC.text;
-                  updateWeeklyBoxTitle(weeklyBox.id, titleTEC.text);
-                  updateFwBoxTitle(weeklyBox.id, titleTEC.text);
+                  await updateWeeklyBoxTitle(weeklyBox.id, titleTEC.text);
+                  // await updateFwBoxTitle(weeklyBox.id, titleTEC.text);
+                  // setState(() {
+                  //   widget.reloadFwSection();
+                  // });
+                  widget.onUpdateWeeklyTitle(weeklyBox, titleTEC.text);
                 }
               },
               child: TextFormField(
@@ -507,8 +521,10 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                       onFocusChange: (hasFocus) {
                         if (!hasFocus) {
                           weeklyElmList[index].content = weeklyElmTEC[index].text;
-                          updateWeeklyElmContent(e.id, weeklyElmTEC[index].text);
-                          updateFwElmContent(weeklyBox.id, e.id, weeklyElmTEC[index].text);
+                          // updateWeeklyElmContent(e.id, weeklyElmTEC[index].text);
+                          // updateFwElmContent(weeklyBox.id, e.id, weeklyElmTEC[index].text);
+                          // widget.reloadFwSection();
+                          widget.onUpdateWeeklyContent(weeklyBox, e, weeklyElmTEC[index].text);
                         }
                       },
                       child: TextFormField(
