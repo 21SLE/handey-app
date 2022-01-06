@@ -14,51 +14,60 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     ScreenSize size = ScreenSize();
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            height: size.getSize(200),
-            child: DrawerHeader(
-              child: Text(
-                'HANDEY',
-                style: rTxtStyle.copyWith(
-                  fontSize: size.getSize(30),
-                  color: Color.fromRGBO(254, 192, 1, 1),
-                  fontWeight: FontWeight.bold
-                )
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: size.getSize(200),
+                child: DrawerHeader(
+                  child: Text(
+                    'HANDEY',
+                    style: rTxtStyle.copyWith(
+                      fontSize: size.getSize(30),
+                      color: Color.fromRGBO(254, 192, 1, 1),
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                ),
               ),
+              ListTile(
+                title: Text('설정', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
+                onTap: () {
+                  Navigator.pop(context);
+                  _launchURL(context, _baseUrl + '/login');
+                  // _launchURL(context, _baseUrl + '/setting');
+                },
+              ),
+              ListTile(
+                title: Text('도움말', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('휴지통', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
+                onTap: () {
+                  Navigator.pop(context);
+                  _launchURL(context, _baseUrl + '/login');
+                  // _launchURL(context, _baseUrl + '/trash');
+                },
+              ),
+            ],
+          ),
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text('로그아웃', style: rTxtStyle.copyWith(fontSize: size.getSize(16), color: Color(
+                    0xFF3E3E3E))),
+                Text('handey@gmail.com', style: rTxtStyle.copyWith(fontSize: size.getSize(11), color: Colors.grey)),
+              ],
             ),
-          ),
-          ListTile(
-            title: Text('설정', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
-            onTap: () {
-              Navigator.pop(context);
-              // _launchURL(context, _baseUrl + '/setting');
-            },
-          ),
-          ListTile(
-            title: Text('도움말', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Text('휴지통', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
-            onTap: () {
-              Navigator.pop(context);
-              _launchURL(context, _baseUrl + '/trash');
-            },
-          ),
-          ListTile(
-            title: Text('정보', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
-            onTap: () {
-              Navigator.pop(context);
-              // _launchURL(context, _baseUrl + '/info');
-            },
-          ),
-          ListTile(
-            title: Text('로그아웃', style: rTxtStyle.copyWith(fontSize: size.getSize(16)),),
             onTap: () async {
               bool result = await showCustomPopUpYn(
                 context: context,

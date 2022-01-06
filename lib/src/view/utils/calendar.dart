@@ -6,7 +6,9 @@ import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
+import 'package:handey_app/src/view/utils/space.dart';
 import 'package:handey_app/src/view/utils/text_style.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -80,42 +82,46 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   children: [
                     Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          buildHandeyText(),
-                          // Column(
-                          //   mainAxisAlignment: MainAxisAlignment.end,
-                          //   children: [
-                          //     Text(
-                          //       DateFormat(' yyyy.').format(DateTime.now()),
-                          //       style: TextStyle(
-                          //           color: Color(0xFF747474),
-                          //           // color: regularYellow,
-                          //           fontSize: size.getSize(24),
-                          //           // fontWeight: FontWeight.bold
-                          //       ),
-                          //     ),
-                          //     Space(height: 2),
-                          //     Text(
-                          //       DateFormat(' MM.dd').format(DateTime.now()),
-                          //       style: TextStyle(
-                          //           color: Color(0xFF747474),
-                          //           // color: regularYellow,
-                          //           fontSize: size.getSize(24),
-                          //           // fontWeight: FontWeight.bold
-                          //       ),
-                          //     ),
-                          //     Space(height: 10),
-                          //     // Text(
-                          //     //   DateFormat('dd').format(DateTime.now()),
-                          //     //   style: TextStyle(
-                          //     //       color: Color(0xFF747474),
-                          //     //       fontSize: size.getSize(24),
-                          //     //       fontWeight: FontWeight.bold),
-                          //     // ),
-                          //   ],
-                          // ),
+                          // buildHandeyText(),
+                          Padding(
+                            padding: EdgeInsets.only(right: size.getSize(10)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Space(height: 4),
+                                Text(
+                                  DateFormat('yyyy').format(DateTime.now()),
+                                  style: TextStyle(
+                                      // color: Color(0xFF747474),
+                                      color: cheeseYellow,
+                                      fontSize: size.getSize(36),
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                // Space(height: 2),
+                                // Text(
+                                //   DateFormat(' MM.dd').format(DateTime.now()),
+                                //   style: TextStyle(
+                                //       color: Color(0xFF747474),
+                                //       // color: regularYellow,
+                                //       fontSize: size.getSize(24),
+                                //       // fontWeight: FontWeight.bold
+                                //   ),
+                                // ),
+                                Space(height: 4),
+                                Text(
+                                  DateFormat('MM').format(DateTime.now()),
+                                  style: TextStyle(
+                                      color: Color(0xFF747474),
+                                      fontSize: size.getSize(32),
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
