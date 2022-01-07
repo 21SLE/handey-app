@@ -1,16 +1,16 @@
 class ToDoBoxModel {
   int id;
   String title;
-  bool noTitle;
+  int index;
   bool fixed;
   List<ToDoElmModel> toDoElmList;
 
-  ToDoBoxModel({this.id, this.title, this.noTitle, this.fixed, this.toDoElmList});
+  ToDoBoxModel({this.id, this.title, this.index, this.fixed, this.toDoElmList});
 
   ToDoBoxModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
-    noTitle = json['noTitle'];
+    index = json['index'];
     fixed = json['fixed'];
     if (json['toDoElmList'] != null) {
       toDoElmList = new List<ToDoElmModel>.empty(growable: true);
@@ -24,7 +24,7 @@ class ToDoBoxModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['title'] = this.title;
-    data['noTitle'] = this.noTitle;
+    data['index'] = this.index;
     data['fixed'] = this.fixed;
     if (this.toDoElmList != null) {
       data['toDoElmList'] = this.toDoElmList.map((v) => v.toJson()).toList();

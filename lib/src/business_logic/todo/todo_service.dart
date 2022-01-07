@@ -10,6 +10,7 @@ Future<List<ToDoBoxModel>> getToDoBoxList(int userId) async {
   if (data['success']) {
     List<dynamic> toDoBoxListData = data['data'];
     List<ToDoBoxModel> toDoBoxList = toDoBoxListData.map((e) => ToDoBoxModel.fromJson(e)).toList();
+    toDoBoxList.sort((a, b) => a.index.compareTo(b.index));
 
     return toDoBoxList;
   } else {

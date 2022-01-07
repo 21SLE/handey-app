@@ -4,6 +4,7 @@ import 'package:handey_app/src/business_logic/user/user_provider.dart';
 import 'package:handey_app/src/view/navigationbar.dart';
 import 'package:handey_app/src/view/signup.dart';
 import 'package:handey_app/src/view/utils/border.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/popup_custom.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
@@ -51,42 +52,68 @@ class _LoginState extends State<Login> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildTitleText(),
-              Space(height: 60),
-              userEmailTextFormField(),
-              Space(height: 15),
-              userPwTextFormField(),
-              Space(height: 40),
-              Row(
-                children: [
-                  loginButton(),
-                  Space(width: 15),
-                  signUpButton()
-                ],
-              )
-            ],
-          ),
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            loginBackGroundImg(),
+            loginForm()
+          ],
         )
       ),
     );
   }
 
-  Text buildTitleText() {
+  Widget loginBackGroundImg() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.fill,
+          image: AssetImage('assets/images/loginscreen.png'),
+        ),
+      ),
+    );
+  }
+
+  Widget loginForm() {
+    return Padding(
+      padding: EdgeInsets.all(size.getSize(50)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Space(height: 30),
+          buildHandeyText(),
+          Space(height: 15),
+          userEmailTextFormField(),
+          Space(height: 5),
+          userPwTextFormField(),
+          Space(height: 25),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              loginButton(),
+              Space(width: 15),
+              signUpButton()
+            ],
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  Text buildHandeyText() {
     return Text(
-      '로그인',
-      style: rTxtStyle.copyWith(fontSize: 30),
+      'HANDEY',
+      style: rTxtStyle.copyWith(fontSize: size.getSize(50), fontWeight: FontWeight.w700, color: cheeseYellow),
     );
   }
 
   Widget userEmailTextFormField() {
     return Container(
-      width: size.getSize(250.0),
+      width: size.getSize(240.0),
       height: size.getSize(54.0),
       child: TextFormField(
         controller: emailTEC,
@@ -101,8 +128,8 @@ class _LoginState extends State<Login> {
             color: Colors.grey,
           ),
           contentPadding: EdgeInsets.symmetric(
-            horizontal: size.getSize(10.0),
-            vertical: size.getSize(15.0),
+            horizontal: size.getSize(5.0),
+            vertical: size.getSize(10.0),
           ),
           counterText: "",
           border: underlineInputBorder(),
@@ -116,7 +143,7 @@ class _LoginState extends State<Login> {
 
   Widget userPwTextFormField() {
     return Container(
-      width: size.getSize(250.0),
+      width: size.getSize(240.0),
       height: size.getSize(54.0),
       child: TextFormField(
         controller: pwTEC,
@@ -124,6 +151,9 @@ class _LoginState extends State<Login> {
         textAlign: TextAlign.left,
         minLines: 1,
         style: rTxtStyle,
+        obscureText: true,
+        enableSuggestions: false,
+        autocorrect: false,
         decoration: InputDecoration(
           hintText: '비밀번호를 입력하세요.',
           hintStyle: TextStyle(
@@ -131,8 +161,8 @@ class _LoginState extends State<Login> {
             color: Colors.grey,
           ),
           contentPadding: EdgeInsets.symmetric(
-            horizontal: size.getSize(10.0),
-            vertical: size.getSize(15.0),
+            horizontal: size.getSize(5.0),
+            vertical: size.getSize(10.0),
           ),
           counterText: "",
           border: underlineInputBorder(),
@@ -149,14 +179,16 @@ class _LoginState extends State<Login> {
         onTapLoginButton(context);
       },
       child: Container(
-        width: size.getSize(100.0),
-        height: size.getSize(60.0),
+        width: size.getSize(90.0),
+        height: size.getSize(45.0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            color: Colors.yellow,
+            color: regularYellow,
+            // color: cheeseYellow,
             borderRadius: BorderRadius.circular(size.getSize(6.0))),
+
         child: Text(
-          '로그인'
+          '로그인', style: rTxtStyle.copyWith(color: Colors.white),
         ),
       ),
     );
@@ -168,14 +200,15 @@ class _LoginState extends State<Login> {
         onTapSignUpButton(context);
       },
       child: Container(
-        width: size.getSize(100.0),
-        height: size.getSize(60.0),
+        width: size.getSize(90.0),
+        height: size.getSize(45.0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.yellow, width: 2.0),
+            border: Border.all(color: regularYellow, width: 2.0),
+            // border: Border.all(color: cheeseYellow, width: 2.0),
             borderRadius: BorderRadius.circular(size.getSize(6.0))),
         child: Text(
-            '회원가입'
+            '회원가입' , style: rTxtStyle.copyWith(color: regularYellow),
         ),
       ),
     );

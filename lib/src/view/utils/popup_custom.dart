@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
 
@@ -52,7 +53,7 @@ showCustomPopUp(
                           style: TextStyle(
                               inherit: false,
                               fontSize: 16,
-                              color: Colors.yellow
+                              color: regularYellow
                           ),
                         ),
                       ],

@@ -44,10 +44,10 @@ class _NavigationBarState extends State<NavigationBar> {
           items: [
             BottomNavigationBarItem(
                 icon: _pageIndex == 0 ? Icon(Icons.home) : Icon(Icons.home_outlined),
-                label: 'home'),
+                label: 'Home'),
             BottomNavigationBarItem(
                 icon: _pageIndex == 1 ? Icon(Icons.account_balance_wallet) : Icon(Icons.account_balance_wallet_outlined),
-                label: 'weekly/after'),
+                label: 'Weekly/Memo'),
           ],
         )
     );

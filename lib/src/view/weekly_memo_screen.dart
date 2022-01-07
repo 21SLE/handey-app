@@ -9,6 +9,7 @@ import 'package:handey_app/src/business_logic/weekly/weekly_model.dart';
 import 'package:handey_app/src/business_logic/weekly/weekly_service.dart';
 import 'package:handey_app/src/view/utils/ToDoCheckBtn.dart';
 import 'package:handey_app/src/view/utils/border.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
@@ -63,7 +64,6 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   Future<List<WeeklyBoxModel>> futureWeeklyBoxList;
   Future<List<FwBoxModel>> futureFwBoxList;
 
-  int fieldCount = 0;
 
   @override
   void initState() {
@@ -114,7 +114,7 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
             weeklyBoxList = snapshot.data;
 
             return Container(
-                height: size.getSize(250.0),
+                height: size.getSize(240.0),
                 child: Column(
                   children: [
                     sectionTitle(true),
@@ -182,14 +182,12 @@ class _WeeklyAfterSectionState extends State<WeeklyAfterSection> {
   Widget createWeeklyBoxBtn() {
     return GestureDetector(
       onTap: () async {
-        int newWeeklyBoxId = await createWeeklyBoxObj(userId);
+        // int newWeeklyBoxId = await createWeeklyBoxObj(userId);
+        WeeklyBoxModel newWeeklyBox = new WeeklyBoxModel();
+        newWeeklyBox = await createWeeklyBoxObj(userId);
         setState(() {
-          WeeklyBoxModel newWeeklyBox = new WeeklyBoxModel();
-          newWeeklyBox.id = newWeeklyBoxId;
-          newWeeklyBox.weeklyElmList = new List<WeeklyElmModel>.empty(growable: true);
           weeklyBoxList.add(newWeeklyBox);
 
-          fieldCount++;
         });
       },
       child: Container(
@@ -318,7 +316,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
   List<TextEditingController> weeklyElmTEC = [];
 
   bool editingYn;
-  int fieldCount = 0;
 
 
   @override
@@ -332,10 +329,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
         weeklyElmTEC.add(TextEditingController(text: weeklyElmList[i].content));
     }
     editingYn = false;
-    if(weeklyElmList != null && weeklyElmList.length != 0)
-      fieldCount = weeklyElmList.length;
-    else
-      fieldCount = 0;
   }
 
   @override
@@ -396,7 +389,7 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Container(height: size.getSize(21), width: size.getSize(6), color: Color.fromRGBO(254, 192, 1, 1)),
+          Container(height: size.getSize(21), width: size.getSize(6), color: cheeseYellow),
           Space(width: 10),
           Container(
             height: size.getSize(26.0),
@@ -453,7 +446,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                     weeklyElmList.add(newWeeklyElm);
 
                     weeklyElmTEC.add(TextEditingController());
-                    fieldCount++;
                     //weeklyElmFNode.add(FocusNode());
                   });
                   break;
@@ -545,7 +537,6 @@ class _WeeklyBoxTileState extends State<WeeklyBoxTile> {
                   ? GestureDetector(
                   onTap: () async {
                     setState(() {
-                      fieldCount--;
                       weeklyElmTEC.removeAt(index);
                       weeklyElmList.removeAt(index);
                     });
@@ -684,7 +675,7 @@ class _MemoSectionState extends State<MemoSection> {
             return Container(
                 alignment: Alignment.topLeft,
                 width: size.getSize(350),
-                height: size.getSize(120),
+                height: size.getSize(130),
                 margin: EdgeInsets.symmetric(horizontal: size.getSize(8)),
                 padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(5), size.getSize(12), size.getSize(12)),
                 decoration: BoxDecoration(

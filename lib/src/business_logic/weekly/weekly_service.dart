@@ -18,13 +18,14 @@ Future<List<WeeklyBoxModel>> getWeeklyBoxList(int userId) async {
 }
 
 /// weeklybox 객체 생성
-Future<int> createWeeklyBoxObj(int userId) async {
+Future<WeeklyBoxModel> createWeeklyBoxObj(int userId) async {
   Map<String, dynamic> data =
   await _httpClient.postRequest('/user/$userId/weeklyBox', {},tokenYn: true);
 
   //weeklyBoxId return
-  if(data['success']){
-    return data['data'];
+  if(data != null && data['success']){
+    print(data['data']);
+    return WeeklyBoxModel.fromJson(data['data']);
   } else {
     return null;
   }
@@ -54,7 +55,7 @@ Future<int> createWeeklyElmObj(int weeklyBoxId) async {
   await _httpClient.postRequest('/user/weeklyBox/$weeklyBoxId', {},tokenYn: true);
 
   //toDoElmId return
-  if(data['success']){
+  if(data != null && data['success']){
     return data['data'];
   } else {
     return null;

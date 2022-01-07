@@ -3,9 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:handey_app/src/business_logic/schecule_event/schecule_event.dart';
 import 'package:handey_app/src/business_logic/schecule_event/schedule_event_service.dart';
 import 'package:handey_app/src/business_logic/user/user_provider.dart';
+import 'package:handey_app/src/view/utils/colors.dart';
 import 'package:handey_app/src/view/utils/exception_handler.dart';
 import 'package:handey_app/src/view/utils/screen_size.dart';
 import 'package:handey_app/src/view/utils/space.dart';
+import 'package:handey_app/src/view/utils/text_style.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -17,6 +20,7 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class _CalendarWidgetState extends State<CalendarWidget> {
+  ScreenSize size;
   Map<DateTime, List<ScheduleEventModel>> selectedEvents;
   CalendarFormat format = CalendarFormat.month;
   DateTime selectedDay;
@@ -52,7 +56,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenSize size = ScreenSize();
+    size = ScreenSize();
     return FutureBuilder(
         future: futureScheduleEventList,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -66,7 +70,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             });
             return Container(
                 width: size.getSize(340.0),
-                height: size.getSize(180.0),
+                height: size.getSize(190.0),
                 padding: EdgeInsets.fromLTRB(size.getSize(12), size.getSize(14), size.getSize(8), size.getSize(8)),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
@@ -78,72 +82,90 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   children: [
                     Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Container(
-                            // padding: EdgeInsets.only(top: size.getSize(10)),
+                          // buildHandeyText(),
+                          Padding(
+                            padding: EdgeInsets.only(right: size.getSize(10)),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
+                                Space(height: 4),
                                 Text(
-                                  DateTime.now().year.toString(),
+                                  DateFormat('yyyy').format(DateTime.now()),
                                   style: TextStyle(
-                                      color: Color.fromRGBO(254, 192, 1, 1),
-                                      fontSize: size.getSize(34),
-                                      fontWeight: FontWeight.bold),
+                                      // color: Color(0xFF747474),
+                                      color: cheeseYellow,
+                                      fontSize: size.getSize(36),
+                                      fontWeight: FontWeight.bold
+                                  ),
                                 ),
-                                Space(height: 10),
+                                // Space(height: 2),
+                                // Text(
+                                //   DateFormat(' MM.dd').format(DateTime.now()),
+                                //   style: TextStyle(
+                                //       color: Color(0xFF747474),
+                                //       // color: regularYellow,
+                                //       fontSize: size.getSize(24),
+                                //       // fontWeight: FontWeight.bold
+                                //   ),
+                                // ),
+                                Space(height: 4),
                                 Text(
-                                  DateTime.now().month.toString(),
+                                  DateFormat('MM').format(DateTime.now()),
                                   style: TextStyle(
                                       color: Color(0xFF747474),
-                                      fontSize: size.getSize(24),
+                                      fontSize: size.getSize(32),
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(left: size.getSize(3), bottom: size.getSize(5)),
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),
                     SizedBox(
                       width: size.getSize(220),
                       child: TableCalendar(
-                        headerVisible: false,
+                        headerVisible: true,
+                        daysOfWeekVisible: false,
                         shouldFillViewport: true,
                         focusedDay: selectedDay,
                         firstDay: DateTime(1990),
                         lastDay: DateTime(2050),
+                        headerStyle: HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          titleTextStyle: rTxtStyle.copyWith(fontSize: size.getSize(14)),
+                          headerPadding: EdgeInsets.all(0),
+                          leftChevronPadding: EdgeInsets.all(0),
+                          rightChevronPadding: EdgeInsets.all(0),
+                        ),
                         calendarStyle: CalendarStyle(
                           isTodayHighlighted: true,
+
                           todayDecoration: BoxDecoration(
-                              color: Color.fromRGBO(254, 192, 1, 1),
-                              borderRadius: BorderRadius.circular(size.getSize(20))
+                            // shape: BoxShape.circle,
+                              color: cheeseYellow,
+                              borderRadius: BorderRadius.circular(10)
                           ),
                           selectedDecoration: BoxDecoration(
-                              color: Color(0xFFFDDC42),
-                              borderRadius: BorderRadius.circular(size.getSize(20))
+                              color: regularYellow,
+                              borderRadius: BorderRadius.circular(10)
                           ),
                         ),
                         selectedDayPredicate: (date) {
                           return isSameDay(selectedDay, date);
                         },
-                        // rangeStartDay: DateTime.now().subtract(Duration(days:3)),
-                        // rangeEndDay: DateTime.now().subtract(Duration(days:1)),
                         eventLoader: _getEventsFromDay,
+                        onPageChanged: (day) {
+                          // setState(() {
+                          //   calendarYear = day.year.toString();
+                          //   calendarMonth = day.month.toString();
+                          // });
+                          focusedDay = day;
+                        },
                         onDaySelected: (selectDay, focusDay) {
                           setState(() {
                             selectedDay = selectDay;
@@ -181,10 +203,16 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             );
           } else {
             return Container(
-                height: size.getSize(180.0),
+                height: size.getSize(190.0),
                 child: Center(child: CircularProgressIndicator()));
           }
         });
-    
+  }
+
+  Text buildHandeyText() {
+    return Text(
+      'HANDEY',
+      style: rTxtStyle.copyWith(fontSize: size.getSize(22), fontWeight: FontWeight.w700, color: cheeseYellow),
+    );
   }
 }
